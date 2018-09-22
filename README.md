@@ -1,5 +1,5 @@
 # OpenMXTime
-The open source OpenMXTime repository contains the OpenMXTime project, an Apache MXNet Incubator based framework implementing spatiotemporal architectures in the time/space and frequency domain.
+The open source OpenMXTime repository contains the OpenMXTime project, an Apache MXNet Incubator - based framework implementing architectures for time series prediction.
 
 Dependencies
 
