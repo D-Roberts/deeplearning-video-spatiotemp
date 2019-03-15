@@ -20,6 +20,7 @@ Descrition : main module to run code
 
 import argparse
 from train_predict import train_predict_cw, train_predict_w
+from train_predict import train_predict_clstm
 
 
 def main():
@@ -53,9 +54,13 @@ def main():
     if config['model'] == 'cw':
         train_predict_cw(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
                          batch_size=config['batch_size'], epochs=config['epochs'])
+
     elif config['model'] == 'w':
         train_predict_w(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
                          batch_size=config['batch_size'], epochs=config['epochs'])
+
+    elif config['model'] == 'clstm':
+        train_predict_clstm()
 
 
 if __name__ == '__main__':

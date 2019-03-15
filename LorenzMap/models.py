@@ -60,3 +60,27 @@ class Lorenz(gluon.nn.Block):
         # add residual layer with matching shape
         output = output + x[:, :, -output.shape[2]:]
         return output, skips
+
+
+
+class LSTMLorenz(gluon.nn.Block):
+    def __init__(self, nhidden=25, dropout=0.1, input_size=1, output_size=1):
+        super(LSTMLorenz, self).__init__()
+        with self.name_scope():
+            self.nhidden = nhidden
+            self.drop = dropout
+            self.input_size = input_size
+            self.net = gluon.rnn.LSTM(hidden_size=self.nhidden, input_size=self.input_size, dropout=self.drop)
+            self.d = gluon.nn.Dense(output_size)
+
+    def forward(self, x):
+        with x.context:
+            output = self.net(x)
+            # assuming num_stepsXbatchsizeXinputsize
+            # want last step output for the dense
+            output = output[-1]
+            output = self.d(output)
+        return output
+
+    def begin_state(self, *args, **kwargs):
+        return self.net.begin_state(*args, **kwargs)
