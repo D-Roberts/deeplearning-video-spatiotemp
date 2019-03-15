@@ -12,3 +12,4 @@ MXNet 1.3.0
 numpy
 
 CALL FOR CONTRIBUTORS!
+To get started, please see the quick_start and LorenzMap codes.
