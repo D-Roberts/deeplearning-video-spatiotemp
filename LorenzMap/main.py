@@ -16,6 +16,7 @@
 # under the License.
 
 import argparse
+import time
 from train_predict import train_predict_cw, train_predict_w
 from train_predict import train_predict_clstm, train_predict_lstm
 
@@ -39,11 +40,13 @@ def main():
     parser.add_argument('--model', type=str, default='cw')
     parser.add_argument('--trajectory', type=int, default=0)
     parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--epochs', type=int, default=10)
+    parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--Lorenzsteps', type=int, default=1500)
     parser.add_argument('--test_size', type=int, default=500)
 
     config = vars(parser.parse_args())
+
+    start = time.time()
 
     if config['model'] == 'cw':
         train_predict_cw(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
@@ -61,6 +64,8 @@ def main():
         train_predict_lstm(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
                          batch_size=config['batch_size'], epochs=config['epochs'])
 
+    end = time.time()
 
+    print("Train and predict took ", end - start, " seconds.")
 if __name__ == '__main__':
     main()
