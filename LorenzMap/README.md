@@ -20,5 +20,6 @@ Learning for Conditional Wavenet x series one step ahead prediction:
 
 ![losses_cw](assets/losses_cw.png)
 
-Predictions vs ground truth:
+Predictions vs ground truth for x trajectory:
+
 ![losses_cw](assets/preds_cwn.png)
