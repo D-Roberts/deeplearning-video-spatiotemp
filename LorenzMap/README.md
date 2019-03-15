@@ -1,4 +1,4 @@
-### End to end time series prediction gluon code for the article 'Lorenz Map Prediction: Travel Through Time'.
+### End to end time series prediction gluon code for the article 'Lorenz Trajectories Prediction: Travel Through Time'.
 
 A first draft of the article is at:
 ![assets]
