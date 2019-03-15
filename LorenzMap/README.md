@@ -19,9 +19,18 @@ or
 
 ###### Additional models:
 
-- unconditional WaveNet: python main.py --model='w'
-- conditional LSTM: python main.py --model='clstm'
-- uncondtional LSTM: python main.py --model='lstm'
+- unconditional WaveNet: 
+```
+python main.py --model='w'
+```
+- conditional LSTM: 
+```
+python main.py --model='clstm'
+```
+- uncondtional LSTM: 
+```
+python main.py --model='lstm'
+```
 
 Default parameters are described in the article and can be viewed in source code. 
 
