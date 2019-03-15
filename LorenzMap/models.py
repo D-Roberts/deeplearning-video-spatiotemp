@@ -62,7 +62,6 @@ class Lorenz(gluon.nn.Block):
         return output, skips
 
 
-
 class LSTMLorenz(gluon.nn.Block):
     def __init__(self, nhidden=25, dropout=0.1, input_size=1, output_size=1):
         super(LSTMLorenz, self).__init__()

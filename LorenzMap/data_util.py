@@ -37,9 +37,7 @@ def getDataLorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz = 1., s = 5,
 def get_gluon_iterator(data, receptive_field, batch_size, shuffle=True, last_batch='discard'):
     '''Input is either the train set, the validation set or the test set, with padding already done if necessary,
     The examples are not extracted, the input is a ts of a certain length.
-    Predict 1 step ahead, 1 time series, x length is receptive field
-
-    To add conditionals or multiple tasks, get separate function.
+    Predict 1 step ahead, 1 time series, x length is receptive field.
     '''
 
     # get x and y

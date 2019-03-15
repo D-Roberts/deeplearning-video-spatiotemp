@@ -1,6 +1,3 @@
-"""
-Descrition : main module to run code
-"""
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -20,7 +17,7 @@ Descrition : main module to run code
 
 import argparse
 from train_predict import train_predict_cw, train_predict_w
-from train_predict import train_predict_clstm
+from train_predict import train_predict_clstm, train_predict_lstm
 
 
 def main():
@@ -35,7 +32,7 @@ def main():
 
     epochs: default for wavenet =100, default for lstm =30.
 
-    TODO: refactor code to include more args, remove any hardcoded, etc.
+    TODO: refactor code to include more args, remove any hardcoded, redundancies, etc.
 
     """
     parser = argparse.ArgumentParser()
@@ -45,9 +42,6 @@ def main():
     parser.add_argument('--epochs', type=int, default=10)
     parser.add_argument('--Lorenzsteps', type=int, default=1500)
     parser.add_argument('--test_size', type=int, default=500)
-    parser.add_argument('--n_hidden_LSTM', type=int, default=25)
-    parser.add_argument('--dilation_depth', type=int, default=4)
-    parser.add_argument('--receptive_field', type=int, default=16)
 
     config = vars(parser.parse_args())
 
@@ -60,7 +54,12 @@ def main():
                          batch_size=config['batch_size'], epochs=config['epochs'])
 
     elif config['model'] == 'clstm':
-        train_predict_clstm()
+        train_predict_clstm(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
+                         batch_size=config['batch_size'], epochs=config['epochs'])
+
+    elif config['model'] == 'lstm':
+        train_predict_lstm(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
+                         batch_size=config['batch_size'], epochs=config['epochs'])
 
 
 if __name__ == '__main__':

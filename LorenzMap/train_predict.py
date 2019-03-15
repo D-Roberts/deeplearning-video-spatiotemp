@@ -209,6 +209,7 @@ def train_predict_cw(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=1
     plt = plot_losses(losses, 'cw')
     # plt.show()
     plt.savefig('assets/losses_cw')
+    plt.close()
 
     # Make predictions on test set
     batch_size = 1
@@ -226,6 +227,7 @@ def train_predict_cw(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=1
     print('rmse test', rmse_test)
     plt = plot_predictions(preds[:100], labels[:100])
     plt.savefig('assets/preds_cwn')
+    plt.close()
 
 
 def train_predict_w(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=1):
@@ -255,6 +257,7 @@ def train_predict_w(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=1)
     plt = plot_losses(losses, 'w')
     # plt.show()
     plt.savefig('assets/losses_w')
+    plt.close()
 
     # Make predictions on test set
     batch_size = 1
@@ -269,6 +272,7 @@ def train_predict_w(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=1)
     print('rmse test', rmse_test)
     plt = plot_predictions(preds[:100], labels[:100])
     plt.savefig('assets/preds_w')
+    plt.close()
 
 
 def train_LSTM_SGD_gluon_mc(ts, data_x, data_y, data_z, in_channels, receptive_field,
@@ -375,15 +379,32 @@ def predict_cond_lstm(ts, g, in_channels, batch_size, receptive_field, net):
 
     return preds, labels
 
-def train_predict_clstm():
-    x, y, z = getDataLorenz(1500, dt=0.01, initx=0., inity=1., initz=1.05, s=10, r=28, b=8 / 3)
+def predict_uni_lstm(data_iter, in_channels, batch_size, receptive_field, net):
+    '''net is the trained net. Which ts to predict for is ts=0, 1, or 3'''
+
+    labels = []
+    preds = []
+
+    for x, y in data_iter:
+        # print(X)
+        x = x.T.reshape(receptive_field, batch_size, in_channels)
+        # print(X)
+        y_hat = net(x)
+        preds.extend(y_hat.asnumpy().tolist()[0])
+        labels.extend(y.asnumpy().tolist())
+
+    return preds, labels
+
+def train_predict_clstm(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=1):
+    x, y, z = getDataLorenz(Lorenznsteps, dt=0.01, initx=0., inity=1., initz=1.05, s=10, r=28, b=8 / 3)
 
     plt1.plot(x, z)
     plt1.xlabel('Lorenz x')
     plt1.ylabel('Lorenz z')
     plt1.savefig('assets/Lorenz_butterfly')
+    plt1.close()
 
-    nTest = 500
+    nTest = ntest
     nTrain = len(x) - nTest
     train_x, test_x = x[:nTrain], x[nTrain:]
     train_y, test_y = y[:nTrain], y[nTrain:]
@@ -391,7 +412,7 @@ def train_predict_clstm():
 
     # LSTM training architecture to match WaveNet unconditional
 
-    batch_size = 32
+    batch_size = batch_size
     seq_len = 16
     receptive_field = 16
     input_size = 3
@@ -399,14 +420,14 @@ def train_predict_clstm():
     in_channels = 3
 
     # Train lstm conditional
-    ts = 2  # for what ts one step ahead
+    ts = ts  # for what ts one step ahead
     loss, net = train_LSTM_SGD_gluon_mc(ts, train_x, train_y, train_z, in_channels=input_size, nhidden=nhidden,
                                         receptive_field=seq_len,
-                                        batch_size=batch_size, epochs=1, lr=0.001, l2_reg=0.001)
+                                        batch_size=batch_size, epochs=epochs, lr=0.001, l2_reg=0.001)
 
-    plt = plot_losses(loss, 'x_lstm_cond')
-    plt.savefig('assets/x_lstm25_cond')
-
+    plt = plot_losses(loss, 'lstm_cond')
+    plt.savefig('assets/lstm_cond_losses')
+    plt.close()
 
     # Predictions on test set.
 
@@ -415,5 +436,110 @@ def train_predict_clstm():
                                  batch_size=batch_size, last_batch='discard')
 
     preds, labels = predict_cond_lstm(ts, g, in_channels, batch_size, receptive_field, net)
-    rmse_x_lstm_cond = rmse(preds, labels)
-    print('rmse lstm x ts cond', rmse_x_lstm_cond)
+    rmse_lstm_cond = rmse(preds, labels)
+    print('rmse lstm cond', rmse_lstm_cond)
+
+def train_LSTM_SGD_gluon(data, in_channels, receptive_field, nhidden, epochs, batch_size, lr, l2_reg):
+    """train with SGD"""
+
+    # pad for ability to compare the models
+    data = np.append(np.zeros(receptive_field), data, axis=0)
+    g = get_gluon_iterator(data, receptive_field=receptive_field, shuffle=True,
+                           batch_size=batch_size, last_batch='discard')
+    # build model
+    net = LSTMLorenz(nhidden=nhidden, input_size=in_channels)
+    net.collect_params().initialize(mx.init.Xavier(), ctx=ctx)
+    trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': lr, 'wd': l2_reg})
+    loss = gluon.loss.L1Loss()
+
+    loss_save = []
+    best_loss = sys.maxsize
+
+    for epoch in range(epochs):
+
+        params = net.collect_params()
+        total_epoch_loss, nb = 0, 0
+
+        for x, y in g:
+            # number of batches
+            nb += 1
+            # initialize for this batch and sequence
+            net.begin_state(batch_size=batch_size, ctx=ctx)
+
+            with autograd.record():
+                x = x.T.reshape(receptive_field, batch_size, in_channels)
+                # print(x.shape)
+                y_hat = net(x) # this is one example
+                # print(y_hat) # 4 examples, for the batch size
+                l = loss(y_hat, y) # this is a vector of length equal to batchsize
+                # print('batch l', l)
+                total_epoch_loss += nd.sum(l).asscalar()
+
+            l.backward()
+            trainer.step(batch_size, ignore_stale_grad=True)
+
+            # Inspect gradients
+            grads = [i.grad(ctx) for i in net.collect_params().values() if i._grad is not None]
+            # print('gradients', len(grads)) # there are 28 grads here
+            # yeap, they are all updating nicely in SGD
+
+        # epoch loss on train set
+        current_loss = total_epoch_loss/nb
+        loss_save.append(current_loss)
+        print('Epoch {}, loss {}'.format(epoch, current_loss))
+
+        if current_loss < best_loss:
+            best_loss = current_loss
+            net.save_params('assets/best_model_lstm')
+        print('best epoch loss: ', best_loss)
+
+     # return best model
+    new_net = LSTMLorenz(nhidden=nhidden, input_size=in_channels)
+    new_net.load_params('assets/best_model_lstm', ctx=ctx)
+    return loss_save, new_net
+
+def train_predict_lstm(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=1):
+    x, y, z = getDataLorenz(Lorenznsteps, dt=0.01, initx=0., inity=1., initz=1.05, s=10, r=28, b=8/3)
+
+    plt1.plot(x, z)
+    plt1.xlabel('Lorenz x')
+    plt1.ylabel('Lorenz z')
+    plt1.savefig('assets/Lorenz_butterfly')
+    plt1.close()
+
+    nTest = ntest
+    nTrain = len(x) - nTest
+    train_x, test_x = x[:nTrain], x[nTrain:]
+    train_y, test_y = y[:nTrain], y[nTrain:]
+    train_z, test_z = z[:nTrain], z[nTrain:]
+
+    if ts == 0:
+        data_train, data_test = train_x, test_x
+    elif ts == 1:
+        data_train, data_test = train_y, test_y
+    elif ts == 2:
+        data_train, data_test = train_z, test_z
+
+    # LSTM training architecture to match WaveNet unconditional
+    batch_size = batch_size
+    seq_len = 16
+    input_size = 1
+    nhidden = 25
+
+    loss, net = train_LSTM_SGD_gluon(data=data_train, in_channels=input_size, nhidden=nhidden,
+                                              receptive_field=seq_len,
+                                      batch_size=batch_size, epochs=epochs, lr=0.001, l2_reg=0.001)
+
+    plt = plot_losses(loss, 'lstm')
+    plt.savefig('assets/losses_lstm')
+    plt.close()
+
+    # Make some predictions
+    batch_size = 1
+    g = get_gluon_iterator(data=data_test, receptive_field=seq_len, shuffle=False,
+                           batch_size=batch_size, last_batch='discard')
+
+    preds, labels = predict_uni_lstm(g, input_size, batch_size, seq_len, net)
+
+    rmse_lstm = rmse(preds, labels)
+    print('rmse lstm', rmse_lstm)
