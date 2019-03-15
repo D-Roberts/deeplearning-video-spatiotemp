@@ -120,7 +120,7 @@ def predict(data_iter, in_channels, net, ts):
     return preds, labels
 
 
-def train_predict_cw(ts=0, ntest=500, Lorenznsteps=1500):
+def train_predict_cw(ts=0, ntest=500, Lorenznsteps=1500, batch_size=32, epochs=100):
 
     x, y, z = getDataLorenz(Lorenznsteps)
     nTest = ntest
@@ -130,9 +130,9 @@ def train_predict_cw(ts=0, ntest=500, Lorenznsteps=1500):
     train_z, test_z = z[:nTrain], z[nTrain:]
 
     ts = ts
-    batch_size = 32
+    batch_size = batch_size
     losses, net = train_net_SGD_gluon_mc(ts, train_x, train_y, train_z, in_channels=3, receptive_field=16,
-                                         batch_size=batch_size, epochs=1, lr=0.001, l2_reg=0.001)
+                                         batch_size=batch_size, epochs=epochs, lr=0.001, l2_reg=0.001)
 
     # Plot losses
     plt = plot_losses(losses, 'wvcnx')

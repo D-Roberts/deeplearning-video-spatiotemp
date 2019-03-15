@@ -23,7 +23,32 @@ from train_predict import train_predict_cw
 
 
 def main():
-    train_predict_cw()
+    """Run train and predict for the various Lorenz map prediction models with user
+    provided arguments. Assets are saved in the 'assets' folder in the project directory.
+    Assets saved are best model, losses plot and predictions vs ground truth plot.
+
+    model: can be Conditional Wavenet, Unconditional Wavenet, Conditional LSTM, Unconditional LSTM.
+    trajectory: to predict x (ts=0), y(ts=1), or z(ts=2) Lorenz trajectories.
+
+    TODO: refactor code to include more args, remove any hardcoded, etc.
+
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=str, default='cw')
+    parser.add_argument('--trajectory', type=int, default=0)
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--epochs', type=int, default=10)
+    parser.add_argument('--Lorenzsteps', type=int, default=1500)
+    parser.add_argument('--test_size', type=int, default=500)
+    parser.add_argument('--n_hidden_LSTM', type=int, default=25)
+    parser.add_argument('--dilation_depth', type=int, default=4)
+    parser.add_argument('--receptive_field', type=int, default=16)
+
+    config = vars(parser.parse_args())
+
+    if config['model'] == 'cw':
+        train_predict_cw(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
+                         batch_size=config['batch_size'], epochs=config['epochs'])
 
 if __name__ == '__main__':
     main()
