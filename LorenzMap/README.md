@@ -1,7 +1,9 @@
-### End to end time series prediction gluon code for the article 'Lorenz Trajectories Prediction: Travel Through Time'.
+### End to end time series prediction gluon code for the article:
+
+'Lorenz Trajectories Prediction: Travel Through Time'.
 
 A first draft of the article is at:
-![assets]
+![Lorenz_today](assets/Lorenz_today.pdf)
 
 Plotting two of the three trajectories (z vs x) gives rise to the Lorenz butterfly.
 
