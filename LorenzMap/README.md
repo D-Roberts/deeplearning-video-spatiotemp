@@ -16,6 +16,9 @@ Additional models:
 
 The LSTM model also achieves and surpasses in some cases the benchmark reported in https://arxiv.org/abs/1703.04691).
 
-Learning for Conditional Wavenet:
+Learning for Conditional Wavenet x series one step ahead prediction:
 
 ![losses_cw](assets/losses_cw.png)
+
+Predictions vs ground truth:
+![losses_cw](assets/preds_cwn.png)
