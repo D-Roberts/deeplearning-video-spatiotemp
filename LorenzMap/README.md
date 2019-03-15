@@ -15,3 +15,7 @@ Additional models:
 - uncondtional LSTM: python main.py --model='lstm'
 
 The LSTM model also achieves and surpasses in some cases the benchmark reported in https://arxiv.org/abs/1703.04691).
+
+Learning for Conditional Wavenet:
+
+![losses_cw](assets/losses_cw.png)
