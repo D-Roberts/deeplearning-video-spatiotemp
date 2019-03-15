@@ -6,7 +6,6 @@ https://arxiv.org/pdf/1703.04691.pdf
 Generate t=1,1500 X, Y and Z as three time series.
 """
 
-import os
 import numpy as np
 import mxnet as mx
 from mxnet import gluon
@@ -64,53 +63,6 @@ def get_gluon_iterator(data, receptive_field, batch_size, shuffle=True, last_bat
     diter = gluon.data.DataLoader(dataset, batch_size, shuffle=shuffle, last_batch=last_batch)
 
     return diter
-
-
-def get_mc_gluon_iterator(data_x, data_y, data_z, receptive_field, batch_size, shuffle=True, last_batch='discard'):
-    '''Multi channel conditional iterator, 1 output, 1 step ahead.
-    '''
-
-    # get x and y
-
-    T = data_x.shape[0]
-
-    Xx = nd.zeros((T-receptive_field, receptive_field))
-    # print(X.shape)
-
-    # same for y and z contributions to features
-    Xy = nd.zeros((T-receptive_field, receptive_field))
-    Xz = nd.zeros((T-receptive_field, receptive_field))
-
-    # only get y from data_x time series
-    yx = nd.zeros((T-receptive_field, 1))
-    # print(y.shape)
-
-    for i in range(T-receptive_field):
-        Xx[i, :] = data_x[i:i+receptive_field]
-        Xy[i, :] = data_y[i:i + receptive_field]
-        Xz[i, :] = data_z[i:i + receptive_field]
-        # labels only from x time series
-        yx[i] = data_x[i+receptive_field]
-        # print('y', y[i])
-
-    # X3 should be TX in_channels Xreceptive_field
-
-    X3 = nd.zeros((T-receptive_field, 3, receptive_field))
-
-
-    for i in range(X3.shape[0]):
-        X3[i,:,:]= nd.concatenate([Xx[i, :].reshape((1,-1)), Xy[i, :].reshape((1,-1)), Xz[i, :].reshape((1,-1))])
-        # print('i', X3[i,:,:])
-
-    # print(X3.shape)
-
-    # gluon needs features and labels together
-    dataset = gluon.data.ArrayDataset(X3, yx)
-    # make iterator with shuffling of examples
-    diter = gluon.data.DataLoader(dataset, batch_size, shuffle=shuffle, last_batch=last_batch)
-
-    return diter
-
 
 def get_mc_mt_gluon_iterator(data_x, data_y, data_z, receptive_field, batch_size, shuffle=True, last_batch='discard'):
     '''Multi channel multi task conditional iterator, 3 output, 1 step ahead.

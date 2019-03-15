@@ -19,7 +19,7 @@ Descrition : main module to run code
 # under the License.
 
 import argparse
-from train_predict import train_predict_cw
+from train_predict import train_predict_cw, train_predict_w
 
 
 def main():
@@ -27,8 +27,12 @@ def main():
     provided arguments. Assets are saved in the 'assets' folder in the project directory.
     Assets saved are best model, losses plot and predictions vs ground truth plot.
 
-    model: can be Conditional Wavenet, Unconditional Wavenet, Conditional LSTM, Unconditional LSTM.
+    model: can be Conditional Wavenet (cw), Unconditional Wavenet (w),
+    Conditional LSTM (clstm), Unconditional LSTM (lstm).
+
     trajectory: to predict x (ts=0), y(ts=1), or z(ts=2) Lorenz trajectories.
+
+    epochs: default for wavenet =100, default for lstm =30.
 
     TODO: refactor code to include more args, remove any hardcoded, etc.
 
@@ -49,6 +53,10 @@ def main():
     if config['model'] == 'cw':
         train_predict_cw(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
                          batch_size=config['batch_size'], epochs=config['epochs'])
+    elif config['model'] == 'w':
+        train_predict_w(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
+                         batch_size=config['batch_size'], epochs=config['epochs'])
+
 
 if __name__ == '__main__':
     main()
