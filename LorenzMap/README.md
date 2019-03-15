@@ -1,1 +1,1 @@
-End to end code for the article 'Lorenz Map Prediction: Travel Through Time'
+End to end gluon code for the article 'Lorenz Map Prediction: Travel Through Time'
