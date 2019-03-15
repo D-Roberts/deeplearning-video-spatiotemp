@@ -1,4 +1,4 @@
-## End to end time series prediction gluon code for the article \'Lorenz Map Prediction: Travel Through Time'.
+## End to end time series prediction gluon code for the article 'Lorenz Map Prediction: Travel Through Time'.
 
 A first draft of the article is at:
 ![assets]
@@ -20,10 +20,10 @@ Additional models:
 
 The LSTM model also achieves and surpasses in some cases the benchmark reported in https://arxiv.org/abs/1703.04691).
 
-## Learning for Conditional Wavenet x series one step ahead prediction:
+### Learning for Conditional Wavenet x series one step ahead prediction:
 
 ![losses_cw](assets/losses_cw.png)
 
-## Predictions vs ground truth for x trajectory:
+### Predictions vs ground truth for x trajectory:
 
 ![preds_cwn](assets/preds_cwn.png)
