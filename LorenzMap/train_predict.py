@@ -4,13 +4,28 @@ with conditional and unconditional WaveNet like architecture and
 conditional and unconditional LSTM architecture.
 
 '''
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
 
 import sys
 import numpy as np
 import mxnet as mx
 from mxnet import gluon, init, autograd
 from mxnet import ndarray as nd
-from models import Lorenz, LSTMLorenz
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt1
@@ -18,6 +33,7 @@ from data_util import getDataLorenz
 from data_util import get_mc_mt_gluon_iterator, get_gluon_iterator
 from metric_util import plot_losses, plot_predictions
 from metric_util import rmse
+from models import Lorenz
 
 np.random.seed(1234)
 ctx = mx.cpu()

@@ -1,3 +1,19 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
 
 import numpy as np
 import mxnet as mx
@@ -60,26 +76,3 @@ class Lorenz(gluon.nn.Block):
         # add residual layer with matching shape
         output = output + x[:, :, -output.shape[2]:]
         return output, skips
-
-
-class LSTMLorenz(gluon.nn.Block):
-    def __init__(self, nhidden=25, dropout=0.1, input_size=1, output_size=1):
-        super(LSTMLorenz, self).__init__()
-        with self.name_scope():
-            self.nhidden = nhidden
-            self.drop = dropout
-            self.input_size = input_size
-            self.net = gluon.rnn.LSTM(hidden_size=self.nhidden, input_size=self.input_size, dropout=self.drop)
-            self.d = gluon.nn.Dense(output_size)
-
-    def forward(self, x):
-        with x.context:
-            output = self.net(x)
-            # assuming num_stepsXbatchsizeXinputsize
-            # want last step output for the dense
-            output = output[-1]
-            output = self.d(output)
-        return output
-
-    def begin_state(self, *args, **kwargs):
-        return self.net.begin_state(*args, **kwargs)
