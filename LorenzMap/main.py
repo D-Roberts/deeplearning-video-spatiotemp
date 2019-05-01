@@ -61,3 +61,12 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    # TODO: module manager to build shared net to be used in train and predict
+    # TODO: build data iterator to work based on arguments for train and predict both cond
+    # and unconditional and for any of the the three targets.
+    # TODO: metrics file to see preds, losses and rmse calculation.
+    # TODO: test that all works at this point and push to git
+
+    # TODO: add necessary arguments and cosnider the argparse class (optional)
+    # consider logging (optional)

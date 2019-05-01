@@ -74,17 +74,4 @@ class Lorenz(gluon.nn.Block):
         output = output + x[:, :, -output.shape[2]:]
         return output, skips
 
-class LorenzBuilder(object):
-    def __init__(self):
-        pass
 
-    def build_model(self):
-        """
-
-        :return:
-        """
-        net = Lorenz(L=self.dilation_depth, in_channels=self.in_channels, k=2, M=1)
-        net.collect_params().initialize(mx.init.Xavier(magnitude=2, rnd_type='gaussian', factor_type='in'),
-                                        ctx=self.ctx)
-        self.trainer = gluon.Trainer(self.net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
-        self.loss = gluon.loss.L1Loss()

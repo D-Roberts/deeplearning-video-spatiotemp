@@ -50,18 +50,8 @@ class Train(object):
         self.l2_reg = config.l2_regularization
         self.build_model()
 
-    def build_model(self):
-        """
 
-        :return:
-        """
-        self.net = Lorenz(L=self.dilation_depth, in_channels=self.in_channels, k=2, M=1)
-        self.net.collect_params().initialize(mx.init.Xavier(magnitude=2, rnd_type='gaussian', factor_type='in'),
-                                        ctx=self.ctx)
-        self.trainer = gluon.Trainer(self.net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
-        self.loss = gluon.loss.L1Loss()
-
-    def save_model(self):
+    def save_model(self, net):
         """
 
         :param epoch:
@@ -69,39 +59,17 @@ class Train(object):
         :return:
         """
         filename = 'assets/best_perf_model'
-        self.net.save_params(filename)
+        net.save_params(filename)
 
-    def train(self, LorenzBuilder, data_iterator):
+    def train(self, module_manager, train_data_iterator):
         """
 
         :return:
         """
-        # TODO: data_iterator must come from another file
-        # x, y, z = generate_synthetic_lorenz(self.lorenz_steps)
-        # nTrain = len(x) - self.ntest
-        # train_x, test_x = x[:nTrain], x[nTrain:]
-        # train_y, test_y = y[:nTrain], y[nTrain:]
-        # train_z, test_z = z[:nTrain], z[nTrain:]
-        #
-        # if self.ts == 0:
-        #     train_data, test_data = train_x, test_x
-        # elif self.ts == 1:
-        #     train_data, test_data = train_y, test_y
-        # elif self.ts == 2:
-        #     train_data, test_data = train_z, test_z
-        #
-        #
-        # # Save for pred time
-        # np.savetxt('assets/predictions/test.txt', test_x)
-        #
-        #
-        #
-        # data = np.append(np.zeros(receptive_field), train_data, axis=0)
-        #
-        # g = get_gluon_iterator(train_data, receptive_field=receptive_field, shuffle=True,
-        #                        batch_size=self.batch_size, last_batch='discard')
 
-        receptive_field = 2 ** self.dilation_depth
+        net = module_manager.build()
+        trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
+        loss = gluon.loss.L1Loss()
 
         loss_save = []
         best_loss = sys.maxsize
@@ -114,12 +82,12 @@ class Train(object):
                 with autograd.record():
                     # (batch_sizeXin_channelsXwidth)
                     x = x.reshape((x.shape[0], in_channels, x.shape[1]))
-                    y_hat = self.net(x)
-                    l = self.loss(y_hat, y)
+                    y_hat = net(x)
+                    l = loss(y_hat, y)
                     total_epoch_loss += nd.sum(l).asscalar()
 
                 l.backward()
-                self.trainer.step(self.batch_size, ignore_stale_grad=True)
+                trainer.step(self.batch_size, ignore_stale_grad=True)
 
             current_loss = total_epoch_loss / nb
             loss_save.append(current_loss)
@@ -127,6 +95,6 @@ class Train(object):
 
             if current_loss < best_loss:
                 best_loss = current_loss
-                self.save_model()
+                self.save_model(net)
 
             print('best epoch loss: ', best_loss)

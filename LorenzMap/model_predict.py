@@ -32,44 +32,23 @@ class Predict(object):
     """
     def __init__(self, config):
         self.batch_size_predict = 1
-        self.in_channels = config.in_channels
-        self.dilation_depth = config.dilation_depth
-        self.lorenz_steps = config.lorenz_steps
-        self.ts = config.trajectory
         self.ctx = mx.cpu()
-        self.lr = config.learning_rate
-        self.l2_reg = config.l2_regularization
-        self.ts = config.trajectory
-        self.build_model()
 
-    # TODO: need better solution than to repeat build model. Module manager likely.
-    # TODO: also argparse class.
+    # TODO: the trajectory should not be given  in predict
+    # the iterator should be ready for the right prediction task
+    # TODO: the test size nlorenz steps should not be given here
+    # that has to do with get data iterator
+    # if possible also shaping in the iterator should be ready to go.
 
-    def build_model(self):
-        """
-
-        :return:
-        """
-        self.net = Lorenz(L=self.dilation_depth, in_channels=self.in_channels, k=2, M=1)
-        self.net.collect_params().initialize(mx.init.Xavier(magnitude=2, rnd_type='gaussian', factor_type='in'),
-                                        ctx=self.ctx)
-        self.trainer = gluon.Trainer(self.net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
-        self.loss = gluon.loss.L1Loss()
+    # TODO: selection of model (w/cw) and target (x, y, z) should be made
+    # outside train and predict in data iterator build
 
 
-    def predict(self):
-
-        receptive_field = 2 ** self.dilation_depth
-
-        # load predict input
-        # TODO: hard coded to be fixed
-        test_data = np.loadtxt('/Users/denisaroberts/PycharmProjects/Lorenz/LorenzMap/assets/predictions/test.txt')
+    def predict(self, module_manager, predict_data_iter):
 
         # load_model
-        self.net.load_params('assets/best_perf_model', ctx=self.ctx)
-
-        g = get_gluon_iterator(test_data, receptive_field=receptive_field, shuffle=False,
-                               batch_size=self.batch_size_predict, last_batch='discard')
+        net = module_manager.build()
+        net.load_params('assets/best_perf_model', ctx=self.ctx)
 
         # labels could be empty
         labels = []
@@ -77,7 +56,7 @@ class Predict(object):
 
         for X, y in g:
             X = X.reshape((X.shape[0], self.in_channels, -1))
-            y_hat = self.net(X)
+            y_hat = net(X)
             preds.extend(y_hat.asnumpy().tolist()[0])
             labels.extend(y[:, self.ts].asnumpy().tolist())
 
