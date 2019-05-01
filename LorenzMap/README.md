@@ -9,7 +9,7 @@ Plotting two of the three trajectories (z vs x) gives rise to the Lorenz butterf
 
 ### Training and inference
 
-To run code with default parameters (conditional Wavenet architecture runs in 24 seconds end to end and achieves 5 fold better test RMSE than state of the art reported in https://arxiv.org/abs/1703.04691): 
+Conditional Wavenet architecture runs in 24 seconds end to end (CPU) and achieves on average the test RMSE reported in https://arxiv.org/abs/1703.04691): 
 
 ###### default setting
 ```
@@ -23,18 +23,8 @@ or
 ```
 python main.py --model='w'
 ```
-- conditional LSTM: 
-```
-python main.py --model='clstm'
-```
-- uncondtional LSTM: 
-```
-python main.py --model='lstm'
-```
 
 Default parameters are described in the article and can be viewed in source code. 
-
-The LSTM model also achieves and surpasses in some cases the benchmark reported in https://arxiv.org/abs/1703.04691).
 
 ### Learning for Conditional Wavenet x series one step ahead prediction:
 
