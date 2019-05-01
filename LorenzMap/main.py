@@ -33,7 +33,7 @@ def main():
     epochs: default for wavenet =100, default for lstm =30.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='cw')
+    parser.add_argument('--model', type=str, default='w')
     parser.add_argument('--trajectory', type=int, default=0)
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--epochs', type=int, default=100)
