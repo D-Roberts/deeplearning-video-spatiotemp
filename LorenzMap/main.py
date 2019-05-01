@@ -15,9 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import argparse
+
 import time
-from train_predict import train_predict_cw, train_predict_w
+import argparse
+from model_train import Train
 
 
 def main():
@@ -37,26 +38,21 @@ def main():
     parser.add_argument('--trajectory', type=int, default=0)
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--epochs', type=int, default=100)
-    parser.add_argument('--Lorenzsteps', type=int, default=1500)
+    parser.add_argument('--lorenz_steps', type=int, default=1500)
     parser.add_argument('--test_size', type=int, default=500)
+    parser.add_argument('--dilation_depth', type=int, default=4)
+    parser.add_argument('--learning_rate', type=float, default=0.001)
+    parser.add_argument('--l2_regularization', type=float, default=0.001)
     # TODO: add additional necessary args
 
 
-    config = vars(parser.parse_args())
+    config = parser.parse_args()
+    trainer = Train(config)
 
     start = time.time()
-
-    if config['model'] == 'cw':
-        train_predict_cw(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
-                         batch_size=config['batch_size'], epochs=config['epochs'])
-
-    elif config['model'] == 'w':
-        train_predict_w(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
-                         batch_size=config['batch_size'], epochs=config['epochs'])
-
+    trainer.train()
     end = time.time()
-
-    print("Train and predict took ", end - start, " seconds.")
+    print("Training took ", end - start, " seconds.")
 
 if __name__ == '__main__':
     main()

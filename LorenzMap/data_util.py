@@ -30,7 +30,7 @@ from mxnet import ndarray as nd
 ctx = mx.cpu()
 np.random.seed(1234)
 
-def getDataLorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz = 1.05, s = 10, r = 28, b = 8/3):
+def generate_synthetic_lorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz = 1.05, s = 10, r = 28, b = 8/3):
     '''Generate Lorenz map via Euler'''
     xs = np.zeros(stepCnt+1)
     ys = np.zeros(stepCnt+1)
