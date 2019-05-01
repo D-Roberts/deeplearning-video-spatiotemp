@@ -19,9 +19,6 @@ import numpy as np
 import mxnet as mx
 from mxnet import gluon
 
-np.random.seed(1234)
-ctx = mx.cpu()
-
 
 class Lorenz(gluon.nn.Block):
     def __init__(self, in_channels=1, L=4, k=2, M=1):
@@ -76,3 +73,18 @@ class Lorenz(gluon.nn.Block):
         # add residual layer with matching shape
         output = output + x[:, :, -output.shape[2]:]
         return output, skips
+
+class LorenzBuilder(object):
+    def __init__(self):
+        pass
+
+    def build_model(self):
+        """
+
+        :return:
+        """
+        net = Lorenz(L=self.dilation_depth, in_channels=self.in_channels, k=2, M=1)
+        net.collect_params().initialize(mx.init.Xavier(magnitude=2, rnd_type='gaussian', factor_type='in'),
+                                        ctx=self.ctx)
+        self.trainer = gluon.Trainer(self.net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
+        self.loss = gluon.loss.L1Loss()

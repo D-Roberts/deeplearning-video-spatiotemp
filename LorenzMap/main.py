@@ -19,6 +19,7 @@
 import time
 import argparse
 from model_train import Train
+from model_predict import Predict
 
 
 def main():
@@ -43,16 +44,20 @@ def main():
     parser.add_argument('--dilation_depth', type=int, default=4)
     parser.add_argument('--learning_rate', type=float, default=0.001)
     parser.add_argument('--l2_regularization', type=float, default=0.001)
+    parser.add_argument('--in_channels', type=int, default=1)
     # TODO: add additional necessary args
 
 
     config = parser.parse_args()
     trainer = Train(config)
+    predictor = Predict(config)
 
     start = time.time()
-    trainer.train()
+    # trainer.train()
+    predictor.predict()
+
     end = time.time()
-    print("Training took ", end - start, " seconds.")
+    print("Process took ", end - start, " seconds.")
 
 if __name__ == '__main__':
     main()
