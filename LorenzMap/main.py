@@ -45,16 +45,23 @@ def main():
     parser.add_argument('--learning_rate', type=float, default=0.001)
     parser.add_argument('--l2_regularization', type=float, default=0.001)
     parser.add_argument('--in_channels', type=int, default=1)
+    parser.add_argument('--train', type=bool, default=True)
+    parser.add_argument('--checkp_path', type=str, default='assets/best_perf_model')
+    parser.add_argument('--predict', type=bool, default=False)
+    parser.add_argument('--predict_input_path', type=str, default='/Users/denisaroberts/PycharmProjects/Lorenz/LorenzMap/assets/predictions/test.txt')
+    parser.add_argument('--evaluation', type=bool, default=True)
+    parser.add_argument('--test_set_')
     # TODO: add additional necessary args
-
 
     config = parser.parse_args()
     trainer = Train(config)
     predictor = Predict(config)
 
     start = time.time()
-    # trainer.train()
-    predictor.predict()
+    if config.train:
+        trainer.train()
+    if config.predict:
+        predictor.predict()
 
     end = time.time()
     print("Process took ", end - start, " seconds.")
@@ -62,10 +69,10 @@ def main():
 if __name__ == '__main__':
     main()
 
-    # TODO: module manager to build shared net to be used in train and predict
-    # TODO: build data iterator to work based on arguments for train and predict both cond
-    # and unconditional and for any of the the three targets.
-    # TODO: metrics file to see preds, losses and rmse calculation.
+    # TODO: make it work as is.
+    # TODO: reshape data parse
+    # TODO: argparse cofnig object
+    # TODO: get gpu ready code.
     # TODO: test that all works at this point and push to git
 
     # TODO: add necessary arguments and cosnider the argparse class (optional)

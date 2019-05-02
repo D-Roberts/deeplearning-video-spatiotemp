@@ -24,7 +24,7 @@ from mxnet import autograd, gluon, nd
 import numpy as np
 from tqdm import trange
 
-from models import Lorenz
+from net_builder import LorenzBuilder
 from data_util import generate_synthetic_lorenz, get_gluon_iterator
 
 
@@ -48,8 +48,10 @@ class Train(object):
         self.ctx = mx.cpu()
         self.lr = config.learning_rate
         self.l2_reg = config.l2_regularization
-        self.build_model()
+        self.plot_losses = config.plot_losses
+        self.checkp_path = config.checkp_path
 
+        # TODO: ctx must be done differently
 
     def save_model(self, net):
         """
@@ -58,24 +60,23 @@ class Train(object):
         :param current_loss:
         :return:
         """
-        filename = 'assets/best_perf_model'
-        net.save_params(filename)
+        net.save_params(self.checkp_path)
 
-    def train(self, module_manager, train_data_iterator):
+    def train(self):
         """
 
         :return:
         """
 
-        net = module_manager.build()
+        net = LorenzBuilder.build(self.dilation_depth, self.in_channels, self.ctx, self.checkp_path, for_train=True)
         trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
         loss = gluon.loss.L1Loss()
 
         loss_save = []
         best_loss = sys.maxsize
+
         for epoch in trange(self.epochs):
             total_epoch_loss, nb = 0, 0
-
             for x, y in g:
                 # number of batches
                 nb += 1
@@ -85,7 +86,6 @@ class Train(object):
                     y_hat = net(x)
                     l = loss(y_hat, y)
                     total_epoch_loss += nd.sum(l).asscalar()
-
                 l.backward()
                 trainer.step(self.batch_size, ignore_stale_grad=True)
 
@@ -98,3 +98,9 @@ class Train(object):
                 self.save_model(net)
 
             print('best epoch loss: ', best_loss)
+
+        if self.plot_loss:
+            # plt = plot_losses(losses, 'w')
+            # # plt.show()
+            # plt.savefig('assets/losses_w')
+            # plt.close()
