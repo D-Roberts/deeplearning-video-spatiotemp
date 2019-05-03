@@ -35,8 +35,8 @@ def main():
     epochs: default for wavenet =100, default for lstm =30.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='w')
-    parser.add_argument('--trajectory', type=int, default=0)
+    parser.add_argument('--model', type=str, default='cw')
+    parser.add_argument('--trajectory', type=int, default=2)
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--lorenz_steps', type=int, default=1500)
@@ -44,14 +44,13 @@ def main():
     parser.add_argument('--dilation_depth', type=int, default=4)
     parser.add_argument('--learning_rate', type=float, default=0.001)
     parser.add_argument('--l2_regularization', type=float, default=0.001)
-    parser.add_argument('--in_channels', type=int, default=1)
+    parser.add_argument('--in_channels', type=int, default=3)
     parser.add_argument('--train', type=bool, default=True)
     parser.add_argument('--checkp_path', type=str, default='assets/best_perf_model')
-    parser.add_argument('--predict', type=bool, default=False)
-    parser.add_argument('--predict_input_path', type=str, default='/Users/denisaroberts/PycharmProjects/Lorenz/LorenzMap/assets/predictions/test.txt')
+    parser.add_argument('--predict', type=bool, default=True)
+    parser.add_argument('--predict_input_path', type=str, default='assets/predictions/test.txt')
     parser.add_argument('--evaluation', type=bool, default=True)
-    parser.add_argument('--test_set_')
-    # TODO: add additional necessary args
+    parser.add_argument('--plot_losses', type=bool, default=True)
 
     config = parser.parse_args()
     trainer = Train(config)
@@ -69,11 +68,19 @@ def main():
 if __name__ == '__main__':
     main()
 
-    # TODO: make it work as is.
+
+
+
     # TODO: reshape data parse
     # TODO: argparse cofnig object
     # TODO: get gpu ready code.
     # TODO: test that all works at this point and push to git
 
-    # TODO: add necessary arguments and cosnider the argparse class (optional)
-    # consider logging (optional)
+
+
+    # TODO: check on performances to match (deteriorated for cw., understand why)
+    # TODO: check on format on preds (the issue of saving to file and loading from file)
+
+    # TODO: consider if RMSE applies or not.
+    # TODO: evaluate if she reported tests on the param selection she says or on
+    # the setting she had in the code and used in my own tuning.

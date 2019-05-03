@@ -47,4 +47,4 @@ def generate_synthetic_lorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz 
     xs = (xs - np.amax(xs))/(np.amax(xs)-np.amin(xs)) + 0.5
     ys = (ys - np.amax(ys))/(np.amax(ys)-np.amin(ys)) + 0.5
     zs = (zs - np.amax(zs))/(np.amax(zs)-np.amin(zs)) + 0.5
-    return np.concatenate([xs, ys, zs])
+    return np.concatenate([xs.reshape(-1,1), ys.reshape(-1,1), zs.reshape(-1,1)], axis=1)

@@ -14,9 +14,8 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-"""
-Trainer class.
-"""
+
+
 import sys
 
 import mxnet as mx
@@ -25,9 +24,8 @@ import numpy as np
 from tqdm import trange
 
 from net_builder import LorenzBuilder
-from data_util import generate_synthetic_lorenz, get_gluon_iterator
-
-
+from data_iterator_builder import DIterators
+from metric_util import plot_losses
 # pylint: disable=invalid-name, too-many-arguments, too-many-instance-attributes, no-member, no-self-use
 
 # set gpu count TODO
@@ -50,27 +48,23 @@ class Train(object):
         self.l2_reg = config.l2_regularization
         self.plot_losses = config.plot_losses
         self.checkp_path = config.checkp_path
+        self.model = config.model
+        self.predict_input_path = config.predict_input_path
 
         # TODO: ctx must be done differently
 
     def save_model(self, net):
-        """
-
-        :param epoch:
-        :param current_loss:
-        :return:
-        """
         net.save_params(self.checkp_path)
 
     def train(self):
-        """
 
-        :return:
-        """
-
-        net = LorenzBuilder.build(self.dilation_depth, self.in_channels, self.ctx, self.checkp_path, for_train=True)
+        net = LorenzBuilder(self.dilation_depth, self.in_channels, self.ctx, self.checkp_path, for_train=True).build()
         trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
         loss = gluon.loss.L1Loss()
+
+        g = DIterators(self.batch_size, self.dilation_depth, self.model,
+                       self.lorenz_steps, self.ntest, self.ts, self.predict_input_path,
+                       for_train=True).train_iterator()
 
         loss_save = []
         best_loss = sys.maxsize
@@ -78,11 +72,11 @@ class Train(object):
         for epoch in trange(self.epochs):
             total_epoch_loss, nb = 0, 0
             for x, y in g:
-                # number of batches
+                # x shape: (batch_sizeXin_channelsXwidth)
+                x = x.reshape((self.batch_size, self.in_channels, -1))
+                # print(x.shape)
                 nb += 1
                 with autograd.record():
-                    # (batch_sizeXin_channelsXwidth)
-                    x = x.reshape((x.shape[0], in_channels, x.shape[1]))
                     y_hat = net(x)
                     l = loss(y_hat, y)
                     total_epoch_loss += nd.sum(l).asscalar()
@@ -99,8 +93,9 @@ class Train(object):
 
             print('best epoch loss: ', best_loss)
 
-        if self.plot_loss:
-            # plt = plot_losses(losses, 'w')
-            # # plt.show()
-            # plt.savefig('assets/losses_w')
-            # plt.close()
+        if self.plot_losses:
+            plt = plot_losses(loss_save, 'w')
+            # plt.show()
+            plt.savefig('assets/losses_w')
+            plt.close()
+
