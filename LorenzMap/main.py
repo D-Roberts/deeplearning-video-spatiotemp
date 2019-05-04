@@ -17,7 +17,6 @@
 
 
 import time
-import argparse
 from model_train import Train
 from model_predict import Predict
 from arg_parser import ArgParser
@@ -35,33 +34,16 @@ def main():
 
     epochs: default for wavenet =100, default for lstm =30.
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='cw')
-    parser.add_argument('--trajectory', type=int, default=2)
-    parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--epochs', type=int, default=200)
-    parser.add_argument('--lorenz_steps', type=int, default=1500)
-    parser.add_argument('--test_size', type=int, default=500)
-    parser.add_argument('--dilation_depth', type=int, default=4)
-    parser.add_argument('--learning_rate', type=float, default=0.001)
-    parser.add_argument('--l2_regularization', type=float, default=0.001)
-    parser.add_argument('--in_channels', type=int, default=3)
-    parser.add_argument('--train', type=bool, default=True)
-    parser.add_argument('--checkp_path', type=str, default='assets/best_perf_model')
-    parser.add_argument('--predict', type=bool, default=True)
-    parser.add_argument('--predict_input_path', type=str, default='assets/predictions/test.txt')
-    parser.add_argument('--evaluation', type=bool, default=True)
-    parser.add_argument('--plot_losses', type=bool, default=True)
 
-    options = ArgParser.parse_args(for_train=True)
-    config = parser.parse_args()
-    trainer = Train(config)
-    predictor = Predict(config)
+    argparser = ArgParser()
+    for_train, options = argparser.parse_args(for_train=False)
+    trainer = Train(options)
+    predictor = Predict(options)
 
     start = time.time()
-    if config.train:
+    if for_train:
         trainer.train()
-    if config.predict:
+    else:
         predictor.predict()
 
     end = time.time()
@@ -71,11 +53,11 @@ if __name__ == '__main__':
     main()
 
 
-
-    # TODO: argparse cofnig object
-    # TODO: use argparse object in main to get config and pass config to where necessary in other modules
+    # TODO: look at where there are redundent param passing that could be directly used from options
 
     # TODO: get gpu ready code.
+
+    # TODO: format Pep 8 (look for arg alignment in mxnet code)
 
     # TODO: test that all works at this point and push to git
 

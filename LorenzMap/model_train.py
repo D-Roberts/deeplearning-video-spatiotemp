@@ -35,44 +35,48 @@ class Train(object):
     Training engine for Lorenz architecture.
     """
 
-    def __init__(self, config):
-        self.batch_size = config.batch_size
-        self.epochs = config.epochs
-        self.in_channels = config.in_channels
-        self.dilation_depth = config.dilation_depth
-        self.lorenz_steps = config.lorenz_steps
-        self.ntest = config.test_size
-        self.ts = config.trajectory
+    def __init__(self, options):
+        self._options = options
+        # self.batch_size = config.batch_size
+        # self.epochs = config.epochs
+        # self.in_channels = config.in_channels
+        # self.dilation_depth = config.dilation_depth
+        # self.lorenz_steps = config.lorenz_steps
+        # self.ntest = config.test_size
+        # self.ts = config.trajectory
         self.ctx = mx.cpu()
-        self.lr = config.learning_rate
-        self.l2_reg = config.l2_regularization
-        self.plot_losses = config.plot_losses
-        self.checkp_path = config.checkp_path
-        self.model = config.model
-        self.predict_input_path = config.predict_input_path
+        # self.lr = config.learning_rate
+        # self.l2_reg = config.l2_regularization
+        # self.plot_losses = config.plot_losses
+        # self.checkp_path = config.checkp_path
+        # self.model = config.model
+        # self.predict_input_path = config.predict_input_path
 
 
     def save_model(self, net):
-        net.save_params(self.checkp_path)
+        net.save_params(self._options.check_path)
 
     def train(self):
 
-        net = LorenzBuilder(self.dilation_depth, self.in_channels, self.ctx, self.checkp_path, for_train=True).build()
-        trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': self.lr, 'wd': self.l2_reg})
+        net = LorenzBuilder(self._options.dilation_depth, self._options.in_channels, self.ctx, self._options.check_path, for_train=True).build()
+        trainer = gluon.Trainer(net.collect_params(),
+                                'adam', {'learning_rate': self._options.learning_rate, 'wd': self._options.l2_regularization})
         loss = gluon.loss.L1Loss()
 
-        g = DIterators(self.batch_size, self.dilation_depth, self.model,
-                       self.lorenz_steps, self.ntest, self.ts, self.predict_input_path,
+        print(self._options.trajectory)
+        g = DIterators(self._options.batch_size, self._options.dilation_depth, self._options.model,
+                       self._options.lorenz_steps, self._options.test_size, self._options.trajectory,
+                       self._options.predict_input_path,
                        for_train=True).train_iterator()
 
         loss_save = []
         best_loss = sys.maxsize
 
-        for epoch in trange(self.epochs):
+        for epoch in trange(self._options.epochs):
             total_epoch_loss, nb = 0, 0
             for x, y in g:
                 # x shape: (batch_sizeXin_channelsXwidth)
-                x = x.reshape((self.batch_size, self.in_channels, -1))
+                x = x.reshape((self._options.batch_size, self._options.in_channels, -1))
                 # print(x.shape)
                 nb += 1
                 with autograd.record():
@@ -80,7 +84,7 @@ class Train(object):
                     l = loss(y_hat, y)
                     total_epoch_loss += nd.sum(l).asscalar()
                 l.backward()
-                trainer.step(self.batch_size, ignore_stale_grad=True)
+                trainer.step(self._options.batch_size, ignore_stale_grad=True)
 
             current_loss = total_epoch_loss / nb
             loss_save.append(current_loss)
@@ -91,7 +95,7 @@ class Train(object):
                 self.save_model(net)
             print('best epoch loss: ', best_loss)
 
-        if self.plot_losses:
+        if self._options.plot_losses:
             plt = plot_losses(loss_save, 'w')
             plt.show()
             plt.savefig('assets/losses_w')

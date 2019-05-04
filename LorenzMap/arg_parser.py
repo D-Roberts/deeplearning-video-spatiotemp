@@ -29,21 +29,22 @@ class ArgParser(object):
     def __init__(self):
         self._arg_parser = argparse.ArgumentParser()
 
-    def parse_args(self, for_train=True):
+    def parse_args(self, for_train):
         """
 
         :param for_train: for train or predict.
         :return: the dict of parsed args.
         """
         self._set_global_arg()
-        if is_train:
+        if for_train:
             self._set_train_arg()
         else:
             self._set_predict_arg()
-        options, args = self._args_parser.parse_known_args()
+        self._set_model_parameter_arg()
+        options, args = self._arg_parser.parse_known_args()
         pprint(options, width=1)
         sys.stdout.flush()
-        return options
+        return for_train, options
 
     def _set_global_arg(self):
         """
@@ -51,12 +52,13 @@ class ArgParser(object):
         Interface implementation arguments.
         """
 
-        self._arg_parser.add_argument('--train', help='train mode or not')
-        self._add_parser.add_argument('--trajectory', help='which trajectory to build')
-        self._arg_parser.add_argument('--model', help='conditional or unconditional')
+        self._arg_parser.add_argument('--train', help='train mode or not', default=True)
+        self._arg_parser.add_argument('--trajectory', help='which trajectory to build', default=0)
+        self._arg_parser.add_argument('--model', help='conditional or unconditional', default='cw')
         self._arg_parser.add_argument('--in_channels', type=int, default=3)
         self._arg_parser.add_argument('--lorenz_steps', type=int, default=1500, help='Synthetic data generation')
         self._arg_parser.add_argument('--predict', type=bool, default=True, help='If to do pred at the same time')
+        self._arg_parser.add_argument('--test_size', type=int, default=500)
 
     def _set_train_arg(self):
         """
@@ -64,19 +66,21 @@ class ArgParser(object):
         Model training related arguments.
         """
 
-        self._arg_parser.add_argument('--test_size', type=int, default=500)
         self._arg_parser.add_argument('--plot_losses', type=bool, default=True)
+        self._arg_parser.add_argument('--check_path', type=str, default='assets/best_perf_model')
+        self._arg_parser.add_argument('--predict_input_path', type=str, default='assets/predictions/test.txt')
 
-    def _set_predict_arg(self)
+
+    def _set_predict_arg(self):
         """
 
         Prediction related arguments.
         """
 
-        self._arg_parser.add_argument('--checkp_path', type=str, default='assets/best_perf_model')
+        self._arg_parser.add_argument('--check_path', type=str, default='assets/best_perf_model')
         self._arg_parser.add_argument('--predict_input_path', type=str, default='assets/predictions/test.txt')
         self._arg_parser.add_argument('--evaluation', type=bool, default=True)
-
+        self._arg_parser.add_argument('--batch_size_predict', type=int, default=1)
 
     def _set_model_parameter_arg(self):
         """
@@ -93,11 +97,11 @@ class ArgParser(object):
         default_test_size = 500
 
         # TODO: setting the context issue.
-        self._arg_parser.add_argument('--batch_size', type=int, default=32)
-        self._arg_parser.add_argument('--epochs', type=int, default=200)
-        self._arg_parser.add_argument('--dilation_depth', type=int, default=4)
-        self._arg_parser.add_argument('--learning_rate', type=float, default=0.001)
-        self._arg_parser.add_argument('--l2_regularization', type=float, default=0.001)
+        self._arg_parser.add_argument('--batch_size', type=int, default=default_batch_size)
+        self._arg_parser.add_argument('--epochs', type=int, default=default_epochs)
+        self._arg_parser.add_argument('--dilation_depth', type=int, default=default_dilation_depth)
+        self._arg_parser.add_argument('--learning_rate', type=float, default=default_learning_rate)
+        self._arg_parser.add_argument('--l2_regularization', type=float, default=default_l2_regularization)
 
 
 

@@ -28,35 +28,30 @@ class Predict(object):
 
     The modeling engine to predict with existing neural network model.
     """
-    def __init__(self, config):
-        self.batch_size_predict = 1
-        self.model = config.model
+    def __init__(self, options):
+        self._options = options
         self.ctx = mx.cpu()
-        self.dilation_depth = config.dilation_depth
-        self.in_channels = config.in_channels
-        self.ts = config.trajectory
-        self.evals = config.evaluation
-        self.checkp_path = config.checkp_path
-        self.lorenz_steps = config.lorenz_steps
-        self.predict_input_path = config.predict_input_path
-        self.ntest = config.test_size
-        # TODO: args should really be inherited from an argparse object.
 
     def predict(self):
 
         # load_model
-        net = LorenzBuilder(self.dilation_depth, self.in_channels, self.ctx, self.checkp_path, for_train=False).build()
-        test_data = np.loadtxt(self.predict_input_path)
-        predict_data_iter = DIterators(self.batch_size_predict, self.dilation_depth, self.model,
-                        self.lorenz_steps, self.ntest, self.ts, self.predict_input_path,
-                        for_train=False).predict_iterator(test_data)
+        net = LorenzBuilder(self._options.dilation_depth, self._options.in_channels, self.ctx,
+                            self._options.check_path, for_train=False).build()
+
+        test_data = np.loadtxt(self._options.predict_input_path)
+
+        predict_data_iter = DIterators(self._options.batch_size_predict,
+                                       self._options.dilation_depth, self._options.model,
+                       self._options.lorenz_steps, self._options.test_size, self._options.trajectory,
+                       self._options.predict_input_path,
+                       for_train=False).predict_iterator(test_data)
 
         # labels could be empty if pure prediction
         labels = []
         preds = []
 
         for x, y in predict_data_iter:
-            x = x.reshape((x.shape[0], self.in_channels, -1))
+            x = x.reshape((x.shape[0], self._options.in_channels, -1))
             y_hat = net(x)
             preds.extend(y_hat.asnumpy().tolist()[0])
             labels.extend(y.asnumpy().tolist())
@@ -64,7 +59,7 @@ class Predict(object):
         np.savetxt('assets/predictions/preds.txt', preds)
         np.savetxt('assets/predictions/labels.txt', labels)
 
-        if self.evals:
+        if self._options.evaluation:
             rmse_test = rmse(preds, labels)
             print('rmse test', rmse_test)
             plt = plot_predictions(preds, labels)

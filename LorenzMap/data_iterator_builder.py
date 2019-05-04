@@ -54,8 +54,8 @@ class DIterators(object):
             diter = gluon.data.DataLoader(dataset, self.batch_size, shuffle=False, last_batch='keep')
         return diter
 
-    def predict_iterator(self, predict_input_path):
-        return self.build_iterator(predict_input_path)
+    def predict_iterator(self, predict_input):
+        return self.build_iterator(predict_input)
 
     def train_iterator(self):
         data = generate_synthetic_lorenz(self.stepcount)
