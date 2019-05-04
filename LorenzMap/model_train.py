@@ -51,7 +51,6 @@ class Train(object):
         self.model = config.model
         self.predict_input_path = config.predict_input_path
 
-        # TODO: ctx must be done differently
 
     def save_model(self, net):
         net.save_params(self.checkp_path)
@@ -90,12 +89,11 @@ class Train(object):
             if current_loss < best_loss:
                 best_loss = current_loss
                 self.save_model(net)
-
             print('best epoch loss: ', best_loss)
 
         if self.plot_losses:
             plt = plot_losses(loss_save, 'w')
-            # plt.show()
+            plt.show()
             plt.savefig('assets/losses_w')
             plt.close()
 

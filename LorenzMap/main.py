@@ -20,6 +20,7 @@ import time
 import argparse
 from model_train import Train
 from model_predict import Predict
+from arg_parser import ArgParser
 
 
 def main():
@@ -38,7 +39,7 @@ def main():
     parser.add_argument('--model', type=str, default='cw')
     parser.add_argument('--trajectory', type=int, default=2)
     parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--epochs', type=int, default=200)
     parser.add_argument('--lorenz_steps', type=int, default=1500)
     parser.add_argument('--test_size', type=int, default=500)
     parser.add_argument('--dilation_depth', type=int, default=4)
@@ -52,6 +53,7 @@ def main():
     parser.add_argument('--evaluation', type=bool, default=True)
     parser.add_argument('--plot_losses', type=bool, default=True)
 
+    options = ArgParser.parse_args(for_train=True)
     config = parser.parse_args()
     trainer = Train(config)
     predictor = Predict(config)
@@ -70,17 +72,24 @@ if __name__ == '__main__':
 
 
 
-
-    # TODO: reshape data parse
     # TODO: argparse cofnig object
+    # TODO: use argparse object in main to get config and pass config to where necessary in other modules
+
     # TODO: get gpu ready code.
+
     # TODO: test that all works at this point and push to git
 
 
 
-    # TODO: check on performances to match (deteriorated for cw., understand why)
-    # TODO: check on format on preds (the issue of saving to file and loading from file)
+    # --------------------
 
     # TODO: consider if RMSE applies or not.
     # TODO: evaluate if she reported tests on the param selection she says or on
     # the setting she had in the code and used in my own tuning.
+
+    # TODO: rerun performances. Notice better with 200 epochs on z unconditional.
+    # TODO: recheck that the correct ts are predicted; seems weirdly the same performance and plot.
+    # seems that cw requires now 400 epochs or more to get a score higher than w. weird. test the
+    # other params for lorenz; and better perform for y traj. (0.002 or so)
+
+    # performance on z is terrible : 0.14

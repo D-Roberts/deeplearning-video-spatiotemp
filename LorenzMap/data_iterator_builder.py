@@ -35,38 +35,18 @@ class DIterators(object):
 
     def build_iterator(self, data):
         T = data.shape[0]
-        Xx = nd.zeros((T - self.receptive_field, self.receptive_field))
-        Xy = nd.zeros((T - self.receptive_field, self.receptive_field))
-        Xz = nd.zeros((T - self.receptive_field, self.receptive_field))
+        X3 = nd.zeros((T - self.receptive_field, data.shape[1], self.receptive_field))
         y = nd.zeros((T - self.receptive_field, data.shape[1]))
 
         for i in range(T - self.receptive_field):
-            Xx[i, :] = data[i:i + self.receptive_field, 0]
-            Xy[i, :] = data[i:i + self.receptive_field, 1]
-            Xz[i, :] = data[i:i + self.receptive_field, 2]
-            # labels
             for j in range(data.shape[1]):
+                X3[i, j, :] = data[i:i + self.receptive_field, j]
                 y[i, j] = data[i + self.receptive_field, j]
-
-        X3 = nd.zeros((T - self.receptive_field, data.shape[1], self.receptive_field))
-        for i in range(X3.shape[0]):
-            X3[i, :, :] = nd.concatenate([Xx[i, :].reshape((1, -1)), Xy[i, :].reshape((1, -1)), Xz[i, :].reshape((1, -1))])
 
         if self.model == 'cw':
             dataset = gluon.data.ArrayDataset(X3, y[:, self.ts])
-
         else:
-            # TODO: the X should be refactored for easy selection
-            if self.ts == 0:
-                dataset = gluon.data.ArrayDataset(Xx, y[:, self.ts])
-
-            elif self.ts == 1:
-                dataset = gluon.data.ArrayDataset(Xy, y[:, self.ts])
-            else:
-                dataset = gluon.data.ArrayDataset(Xz, y[:, self.ts])
-
-
-            # TODO: add a raise Value Error if self.ts not one of the 3
+            dataset = gluon.data.ArrayDataset(X3[:, self.ts, :], y[:, self.ts])
 
         if self.for_train:
             diter = gluon.data.DataLoader(dataset, self.batch_size, shuffle=True, last_batch='discard')
