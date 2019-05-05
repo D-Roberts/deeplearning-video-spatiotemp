@@ -15,9 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
+
 from mxnet import ndarray as nd
 from mxnet import gluon
 from utils import create_context
+
 
 class DIterators(object):
     def __init__(self, options):
@@ -42,9 +44,11 @@ class DIterators(object):
             dataset = gluon.data.ArrayDataset(X3[:, self._options.trajectory, :], y[:, self._options.trajectory])
 
         if for_train:
-            diter = gluon.data.DataLoader(dataset, self._options.batch_size, shuffle=True, last_batch='discard')
+            diter = gluon.data.DataLoader(dataset, self._options.batch_size,\
+                                          shuffle=True, last_batch='discard')
         else:
-            diter = gluon.data.DataLoader(dataset, self._options.batch_size_predict, shuffle=False, last_batch='discard')
+            diter = gluon.data.DataLoader(dataset, self._options.batch_size_predict,\
+                                          shuffle=False, last_batch='discard')
         return diter
 
 

@@ -1,10 +1,3 @@
-"""
-Generate the Lorenz data for toy example in:
-https://arxiv.org/pdf/1703.04691.pdf
-Generate t=1,1500 X, Y and Z as three time series.
-
-Get data iterators.
-"""
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -22,6 +15,7 @@ Get data iterators.
 # specific language governing permissions and limitations
 # under the License.
 
+
 import math
 import matplotlib
 matplotlib.use('TkAgg')
@@ -30,8 +24,8 @@ import mxnet as mx
 from mxnet import ndarray as nd
 import numpy as np
 
-# context utils
 
+# context utils
 def create_context(num_gpu):
     if num_gpu == 0:
         ctx = mx.cpu()
@@ -42,7 +36,11 @@ def create_context(num_gpu):
 
 # data utils
 def generate_synthetic_lorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz = 1.05, s = 10, r = 28, b = 8/3):
-    '''Generate Lorenz map via Euler'''
+    """
+    Generate the Lorenz data for toy example in:
+    https://arxiv.org/pdf/1703.04691.pdf
+    Generate t=1,1500 X, Y and Z as three time series.
+    """
     xs = np.zeros(stepCnt+1)
     ys = np.zeros(stepCnt+1)
     zs = np.zeros(stepCnt+1)
@@ -61,7 +59,6 @@ def generate_synthetic_lorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz 
     return np.concatenate([xs.reshape(-1,1), ys.reshape(-1,1), zs.reshape(-1,1)], axis=1)
 
 # metric utils
-
 def rmse(preds, labels):
     '''RMSE metric reported in literature
     '''
@@ -69,25 +66,13 @@ def rmse(preds, labels):
     mse.update(labels=nd.array(labels), preds=nd.array(preds))
     return math.sqrt(mse.get()[1])
 
-def mase(preds_model, preds_naive, labels):
-    '''Mean absolute scaled arror to compare model performance to naive forecast
-    '''
-    mae_model = np.mean(np.abs(np.array(preds_model)-np.array(labels)))
-    mae_naive = np.mean(np.abs(np.array(preds_naive)-np.array(labels)))
-    return mae_model/mae_naive
-
-def mae(preds, labels):
-    '''Mean absolute error
-    '''
-    mae = mx.metric.MAE()
-    mae.update(labels=nd.array(labels), preds=nd.array(preds))
-    return mae.get()[1]
-
 # plot utils
 def plot_losses(losses, label):
-    '''Plot losses per epoch. Train or validation loss or
+    """Plot losses per epoch.
+
+    Train or validation loss or
     another metric.
-    '''
+    """
     x_axis = np.linspace(0, len(losses), len(losses), endpoint=True)
     plt.semilogy(x_axis, losses, label=label)
     plt.xlabel('epoch')
@@ -95,8 +80,9 @@ def plot_losses(losses, label):
     return plt
 
 def plot_predictions(preds, labels):
-    '''Plot predictions vs ground truth.
-    '''
+    """Plot predictions vs ground truth.
+
+    """
     T = len(preds)
     time = nd.arange(0, T)
     plt.plot(time.asnumpy(), labels, label='labels')

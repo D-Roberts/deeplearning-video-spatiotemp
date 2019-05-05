@@ -42,12 +42,11 @@ class Train(object):
         net.save_params(os.path.join(self._options.check_path, 'best_perf_model'))
 
     def train(self, train_iter):
-
         ctx = create_context(self._options.num_gpu)
         net = LorenzBuilder(self._options, ctx=ctx, for_train=True).build()
-        trainer = gluon.Trainer(net.collect_params(),
-                                'adam', {'learning_rate': self._options.learning_rate,
-                                         'wd': self._options.l2_regularization})
+        trainer = gluon.Trainer(net.collect_params(), 'adam',
+                                {'learning_rate': self._options.learning_rate,
+                                 'wd': self._options.l2_regularization})
 
         loss = gluon.loss.L1Loss()
         loss_save = []
@@ -58,19 +57,17 @@ class Train(object):
         for epoch in trange(self._options.epochs):
             total_epoch_loss, nb = mx.nd.zeros(1, ctx), 0
             for x, y in train_iter:
-                # x shape: (batch_sizeXin_channelsXwidth)
-                x = x.as_in_context(ctx).reshape((self._options.batch_size, self._options.in_channels, -1))
-                y = y.as_in_context(ctx)
-                # print(x.shape)
                 nb += 1
+                # x shape: (batch_sizeXin_channelsXwidth)
+                x = x.reshape((self._options.batch_size,
+                               self._options.in_channels, -1)).as_in_context(ctx)
+                y = y.as_in_context(ctx)
                 with autograd.record():
                     y_hat = net(x)
                     l = loss(y_hat, y)
-
                 l.backward()
                 trainer.step(self._options.batch_size, ignore_stale_grad=True)
                 total_epoch_loss += l.sum()
-                nb += x.shape[0]
 
             current_loss = total_epoch_loss.asscalar() / nb
             loss_save.append(current_loss)
@@ -82,5 +79,6 @@ class Train(object):
             print('best epoch loss: ', best_loss)
 
         end = time.time()
-        np.savetxt(os.path.join(self._options.assets_dir, 'losses.txt'), np.array(loss_save))
+        np.savetxt(os.path.join(self._options.assets_dir, 'losses.txt'),\
+                   np.array(loss_save))
         print("Training took ", end - start, " seconds.")
