@@ -5,7 +5,7 @@ https://arxiv.org/abs/1903.07768
 
 Plotting two of the three trajectories (z vs x) gives rise to the Lorenz butterfly.
 
-![Lorenz_butterfly](assets/Lorenz_butterfly.png)
+![Lorenz_butterfly](assets/butterfly.png)
 
 ### Training and inference
 
@@ -18,8 +18,8 @@ python main.py
 
 ### Learning for Conditional Wavenet x series one step ahead prediction:
 
-![losses_cw](assets/losses_cw.png)
+![losses_cw](assets/train_loss.png)
 
 ### Predictions vs ground truth for x trajectory:
 
-![preds_cwn](assets/preds_cwn.png)
+![preds_cwn](assets/predsx_cw.png)
