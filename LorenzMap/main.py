@@ -16,7 +16,6 @@
 # under the License.
 
 
-import time
 from model_train import Train
 from model_predict import Predict
 from data_generation import LorenzMapData
@@ -59,12 +58,9 @@ if __name__ == '__main__':
 
 
 
-    # TODO: the ctx context.
-
-    # TODO: train and predict should be getting iterators as params; iterators should not be derived in training
-    # which is done on gpu.
-
     # TODO: get gpu ready code.
+
+    # TODO: separate evaluate from predict; predict should only save
 
     # TODO: format Pep 8 (look for arg alignment in mxnet code)
 
@@ -74,7 +70,6 @@ if __name__ == '__main__':
 
     # --------------------
 
-    # TODO: consider if RMSE applies or not.
     # TODO: evaluate if she reported tests on the param selection she says or on
     # the setting she had in the code and used in my own tuning.
 

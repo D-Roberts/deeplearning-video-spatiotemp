@@ -19,7 +19,7 @@ import os
 
 import numpy as np
 from net_builder import LorenzBuilder
-from metric_util import rmse, plot_predictions
+from utils import rmse, plot_predictions, create_context
 
 class Predict(object):
     """
@@ -30,18 +30,21 @@ class Predict(object):
         self._options = options
 
     def predict(self, predict_iter):
-        net = LorenzBuilder(self._options, for_train=False).build()
+        ctx = create_context(self._options.num_gpu)
+        net = LorenzBuilder(self._options, ctx=ctx, for_train=False).build()
 
         labels = []
         preds = []
 
         for x, y in predict_iter:
-            x = x.reshape((x.shape[0], self._options.in_channels, -1))
+            x = x.as_in_context(ctx).reshape((x.shape[0], self._options.in_channels, -1))
+            y = y.as_in_context(ctx)
             y_hat = net(x)
             preds.extend(y_hat.asnumpy().tolist()[0])
             labels.extend(y.asnumpy().tolist())
 
         np.savetxt(os.path.join(self._options.assets_dir, 'preds.txt'), preds)
+        np.savetxt(os.path.join(self._options.assets_dir, 'labels.txt'), labels)
 
         rmse_test = rmse(preds, labels)
         print('rmse test', rmse_test)

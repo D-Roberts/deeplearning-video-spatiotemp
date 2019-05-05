@@ -1,7 +1,7 @@
 
 import os
 import numpy as np
-from data_util import generate_synthetic_lorenz
+from utils import generate_synthetic_lorenz
 
 class LorenzMapData(object):
     # should save train and test data in assets/data

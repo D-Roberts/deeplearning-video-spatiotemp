@@ -54,7 +54,7 @@ class ArgParser(object):
         self._arg_parser.add_argument('--in_channels', type=int, default=1)
         self._arg_parser.add_argument('--lorenz_steps', type=int, default=1500)
         self._arg_parser.add_argument('--test_size', type=int, default=500)
-        self._arg_parser.add_argument('--ctx', type=str, default='mx.cpu()')
+        self._arg_parser.add_argument('--num_gpu', type=str, default=0)
         self._arg_parser.add_argument('--assets_dir', type=str, default='assets')
         self._arg_parser.add_argument('--check_path', type=str, default='assets')
 
@@ -82,13 +82,14 @@ class ArgParser(object):
         default_dilation_depth = 4
         default_learning_rate = 0.001
         default_l2_regularization = 0.001
+        default_seed = 1234
 
-        # TODO: setting the context issue.
         self._arg_parser.add_argument('--dilation_depth', type=int, default=default_dilation_depth)
         self._arg_parser.add_argument('--learning_rate', type=float, default=default_learning_rate)
         self._arg_parser.add_argument('--l2_regularization', type=float, default=default_l2_regularization)
         self._arg_parser.add_argument('--batch_size', type=int, default=default_batch_size)
         self._arg_parser.add_argument('--epochs', type=int, default=default_epochs)
+        self._arg_parser.add_argument('--seed', type=int, default=default_seed)
 
 
 

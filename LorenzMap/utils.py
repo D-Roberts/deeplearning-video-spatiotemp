@@ -22,14 +22,25 @@ Get data iterators.
 # specific language governing permissions and limitations
 # under the License.
 
-import numpy as np
+import math
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 import mxnet as mx
-from mxnet import gluon
 from mxnet import ndarray as nd
+import numpy as np
 
-ctx = mx.cpu()
-np.random.seed(1234)
+# context utils
 
+def create_context(num_gpu):
+    if num_gpu == 0:
+        ctx = mx.cpu()
+    else:
+        ctx = mx.gpu()
+    return ctx
+
+
+# data utils
 def generate_synthetic_lorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz = 1.05, s = 10, r = 28, b = 8/3):
     '''Generate Lorenz map via Euler'''
     xs = np.zeros(stepCnt+1)
@@ -48,3 +59,47 @@ def generate_synthetic_lorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz 
     ys = (ys - np.amax(ys))/(np.amax(ys)-np.amin(ys)) + 0.5
     zs = (zs - np.amax(zs))/(np.amax(zs)-np.amin(zs)) + 0.5
     return np.concatenate([xs.reshape(-1,1), ys.reshape(-1,1), zs.reshape(-1,1)], axis=1)
+
+# metric utils
+
+def rmse(preds, labels):
+    '''RMSE metric reported in literature
+    '''
+    mse = mx.metric.MSE()
+    mse.update(labels=nd.array(labels), preds=nd.array(preds))
+    return math.sqrt(mse.get()[1])
+
+def mase(preds_model, preds_naive, labels):
+    '''Mean absolute scaled arror to compare model performance to naive forecast
+    '''
+    mae_model = np.mean(np.abs(np.array(preds_model)-np.array(labels)))
+    mae_naive = np.mean(np.abs(np.array(preds_naive)-np.array(labels)))
+    return mae_model/mae_naive
+
+def mae(preds, labels):
+    '''Mean absolute error
+    '''
+    mae = mx.metric.MAE()
+    mae.update(labels=nd.array(labels), preds=nd.array(preds))
+    return mae.get()[1]
+
+# plot utils
+def plot_losses(losses, label):
+    '''Plot losses per epoch. Train or validation loss or
+    another metric.
+    '''
+    x_axis = np.linspace(0, len(losses), len(losses), endpoint=True)
+    plt.semilogy(x_axis, losses, label=label)
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    return plt
+
+def plot_predictions(preds, labels):
+    '''Plot predictions vs ground truth.
+    '''
+    T = len(preds)
+    time = nd.arange(0, T)
+    plt.plot(time.asnumpy(), labels, label='labels')
+    plt.plot(time.asnumpy(), preds, label='predictions')
+    plt.legend()
+    return plt
