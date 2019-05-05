@@ -15,16 +15,6 @@ Conditional Wavenet architecture runs in 24 seconds end to end (CPU) and achieve
 ```
 python main.py
 ``` 
-or
-
-###### Additional models:
-
-- unconditional WaveNet: 
-```
-python main.py --model='w'
-```
-
-Default parameters are described in the article and can be viewed in source code. 
 
 ### Learning for Conditional Wavenet x series one step ahead prediction:
 
