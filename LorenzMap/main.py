@@ -21,7 +21,7 @@ from model_predict import Predict
 from data_generation import LorenzMapData
 from data_iterator_builder import DIterators
 from arg_parser import ArgParser
-
+from eval import Evaluate
 
 def main():
     """Run train and predict for the various Lorenz map prediction models with user
@@ -52,21 +52,23 @@ def main():
     predict_iter = DIterators(options).build_iterator(test_data, for_train=False)
     predictor.predict(predict_iter)
 
+    # Evaluate performance on test set
+    evaluator = Evaluate(options)
+    evaluator()
+
 
 if __name__ == '__main__':
     main()
 
 
-
-    # TODO: get gpu ready code.
-
     # TODO: separate evaluate from predict; predict should only save
 
     # TODO: format Pep 8 (look for arg alignment in mxnet code)
 
+
     # TODO: test that all works at this point and push to git
 
-
+    #TODO; sufficient to inquire
 
     # --------------------
 

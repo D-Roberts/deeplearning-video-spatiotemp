@@ -22,6 +22,7 @@ import os
 
 import mxnet as mx
 from mxnet import autograd, gluon, nd
+import numpy as np
 from tqdm import trange
 
 from net_builder import LorenzBuilder
@@ -43,14 +44,12 @@ class Train(object):
     def train(self, train_iter):
 
         ctx = create_context(self._options.num_gpu)
-
         net = LorenzBuilder(self._options, ctx=ctx, for_train=True).build()
         trainer = gluon.Trainer(net.collect_params(),
                                 'adam', {'learning_rate': self._options.learning_rate,
                                          'wd': self._options.l2_regularization})
 
         loss = gluon.loss.L1Loss()
-
         loss_save = []
         best_loss = sys.maxsize
 
@@ -83,11 +82,5 @@ class Train(object):
             print('best epoch loss: ', best_loss)
 
         end = time.time()
+        np.savetxt(os.path.join(self._options.assets_dir, 'losses.txt'), np.array(loss_save))
         print("Training took ", end - start, " seconds.")
-
-        if self._options.plot_losses:
-            plt = plot_losses(loss_save, 'w')
-            plt.show()
-            plt.savefig(os.path.join(self._options.assets_dir, 'losses_w'))
-            plt.close()
-

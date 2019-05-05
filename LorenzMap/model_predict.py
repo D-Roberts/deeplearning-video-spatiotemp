@@ -46,14 +46,6 @@ class Predict(object):
         np.savetxt(os.path.join(self._options.assets_dir, 'preds.txt'), preds)
         np.savetxt(os.path.join(self._options.assets_dir, 'labels.txt'), labels)
 
-        rmse_test = rmse(preds, labels)
-        print('rmse test', rmse_test)
-        plt = plot_predictions(preds, labels)
-        plt.savefig(os.path.join(self._options.assets_dir, 'preds_plot'))
-        plt.show()
-        plt.close()
-
-
 
 
 

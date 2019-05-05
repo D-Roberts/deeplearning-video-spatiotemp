@@ -17,6 +17,7 @@
 
 from mxnet import ndarray as nd
 from mxnet import gluon
+from utils import create_context
 
 class DIterators(object):
     def __init__(self, options):
@@ -24,10 +25,11 @@ class DIterators(object):
         self.receptive_field = self._options.dilation_depth ** 2
 
     def build_iterator(self, data, for_train):
+        ctx = create_context(self._options.num_gpu)
 
         T = data.shape[0]
-        X3 = nd.zeros((T - self.receptive_field, data.shape[1], self.receptive_field))
-        y = nd.zeros((T - self.receptive_field, data.shape[1]))
+        X3 = nd.zeros((T - self.receptive_field, data.shape[1], self.receptive_field), ctx=ctx)
+        y = nd.zeros((T - self.receptive_field, data.shape[1]), ctx=ctx)
 
         for i in range(T - self.receptive_field):
             for j in range(data.shape[1]):
