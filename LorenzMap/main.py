@@ -19,6 +19,8 @@
 import time
 from model_train import Train
 from model_predict import Predict
+from data_generation import LorenzMapData
+from data_iterator_builder import DIterators
 from arg_parser import ArgParser
 
 
@@ -35,25 +37,32 @@ def main():
     epochs: default for wavenet =100, default for lstm =30.
     """
 
+
     argparser = ArgParser()
-    for_train, options = argparser.parse_args(for_train=False)
+    options = argparser.parse_args()
+    data_generator = LorenzMapData(options)
+    train_data, test_data = data_generator.generate_train_test_sets()
+
+    # Train
     trainer = Train(options)
+    train_iter = DIterators(options).build_iterator(train_data, for_train=True)
+    trainer.train(train_iter)
+
+    # Predict on test set and evaluate
     predictor = Predict(options)
+    predict_iter = DIterators(options).build_iterator(test_data, for_train=False)
+    predictor.predict(predict_iter)
 
-    start = time.time()
-    if for_train:
-        trainer.train()
-    else:
-        predictor.predict()
-
-    end = time.time()
-    print("Process took ", end - start, " seconds.")
 
 if __name__ == '__main__':
     main()
 
 
-    # TODO: look at where there are redundent param passing that could be directly used from options
+
+    # TODO: the ctx context.
+
+    # TODO: train and predict should be getting iterators as params; iterators should not be derived in training
+    # which is done on gpu.
 
     # TODO: get gpu ready code.
 

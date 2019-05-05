@@ -15,7 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import numpy as np
+
+import os
+
 import mxnet as mx
 from mxnet import gluon
 
@@ -75,11 +77,8 @@ class Lorenz(gluon.nn.Block):
         return output, skips
 
 class LorenzBuilder(object):
-    def __init__(self, dilation_depth, in_channels, ctx, checkp_path, for_train=True):
-        self.dilation_depth = dilation_depth
-        self.in_channels = in_channels
-        self.ctx = ctx
-        self.checkp_path = checkp_path
+    def __init__(self, options, for_train):
+        self._options = options
         self.for_train = for_train
 
     def build(self):
@@ -87,12 +86,12 @@ class LorenzBuilder(object):
 
         :return: built net for training or prediction.
         """
-        net = Lorenz(L=self.dilation_depth, in_channels=self.in_channels, k=2, M=1)
+        net = Lorenz(L=self._options.dilation_depth, in_channels=self._options.in_channels, k=2, M=1)
         if self.for_train:
             net.collect_params().initialize(mx.init.Xavier(magnitude=2, rnd_type='gaussian', factor_type='in'),
-                                            ctx=self.ctx)
+                                            ctx=eval(self._options.ctx))
         else:
-            net.load_params(self.checkp_path, ctx=self.ctx)
+            net.load_params(os.path.join(self._options.check_path, 'best_perf_model'), ctx=eval(self._options.ctx))
         return net
 
 

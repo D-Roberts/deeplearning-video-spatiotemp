@@ -17,18 +17,16 @@
 
 
 import sys
+import time
+import os
 
-import mxnet as mx
 from mxnet import autograd, gluon, nd
-import numpy as np
 from tqdm import trange
 
 from net_builder import LorenzBuilder
-from data_iterator_builder import DIterators
 from metric_util import plot_losses
 # pylint: disable=invalid-name, too-many-arguments, too-many-instance-attributes, no-member, no-self-use
 
-# set gpu count TODO
 
 class Train(object):
     """
@@ -37,44 +35,27 @@ class Train(object):
 
     def __init__(self, options):
         self._options = options
-        # self.batch_size = config.batch_size
-        # self.epochs = config.epochs
-        # self.in_channels = config.in_channels
-        # self.dilation_depth = config.dilation_depth
-        # self.lorenz_steps = config.lorenz_steps
-        # self.ntest = config.test_size
-        # self.ts = config.trajectory
-        self.ctx = mx.cpu()
-        # self.lr = config.learning_rate
-        # self.l2_reg = config.l2_regularization
-        # self.plot_losses = config.plot_losses
-        # self.checkp_path = config.checkp_path
-        # self.model = config.model
-        # self.predict_input_path = config.predict_input_path
-
 
     def save_model(self, net):
-        net.save_params(self._options.check_path)
+        net.save_params(os.path.join(self._options.check_path, 'best_perf_model'))
 
-    def train(self):
+    def train(self, train_iter):
 
-        net = LorenzBuilder(self._options.dilation_depth, self._options.in_channels, self.ctx, self._options.check_path, for_train=True).build()
+        net = LorenzBuilder(self._options, for_train=True).build()
         trainer = gluon.Trainer(net.collect_params(),
-                                'adam', {'learning_rate': self._options.learning_rate, 'wd': self._options.l2_regularization})
-        loss = gluon.loss.L1Loss()
+                                'adam', {'learning_rate': self._options.learning_rate,
+                                         'wd': self._options.l2_regularization})
 
-        print(self._options.trajectory)
-        g = DIterators(self._options.batch_size, self._options.dilation_depth, self._options.model,
-                       self._options.lorenz_steps, self._options.test_size, self._options.trajectory,
-                       self._options.predict_input_path,
-                       for_train=True).train_iterator()
+        loss = gluon.loss.L1Loss()
 
         loss_save = []
         best_loss = sys.maxsize
 
+        start = time.time()
+
         for epoch in trange(self._options.epochs):
             total_epoch_loss, nb = 0, 0
-            for x, y in g:
+            for x, y in train_iter:
                 # x shape: (batch_sizeXin_channelsXwidth)
                 x = x.reshape((self._options.batch_size, self._options.in_channels, -1))
                 # print(x.shape)
@@ -95,9 +76,12 @@ class Train(object):
                 self.save_model(net)
             print('best epoch loss: ', best_loss)
 
+        end = time.time()
+        print("Process took ", end - start, " seconds.")
+
         if self._options.plot_losses:
             plt = plot_losses(loss_save, 'w')
             plt.show()
-            plt.savefig('assets/losses_w')
+            plt.savefig(os.path.join(self._options.assets_dir, 'losses_w'))
             plt.close()
 
