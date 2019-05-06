@@ -31,7 +31,7 @@ from data_iterator_builder import DIterators
 from arg_parser import ArgParser
 from eval import Evaluate
 
-mx.random.seed(1235)
+# mx.random.seed(1234)
 
 def main():
     """

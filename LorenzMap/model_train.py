@@ -69,7 +69,7 @@ class Train(object):
                 total_epoch_loss += l.sum()
                 nb += x.shape[0]
 
-            current_loss = total_epoch_loss.asscalar() / nb
+            current_loss = total_epoch_loss.asscalar()/nb
             loss_save.append(current_loss)
             print('Epoch {}, loss {}'.format(epoch, current_loss))
 

@@ -33,13 +33,14 @@ def create_context(num_gpu):
         ctx = mx.gpu()
     return ctx
 
-
 # data utils
 def generate_synthetic_lorenz(stepCnt, dt = 0.01, initx = 0., inity = 1., initz = 1.05, s = 10, r = 28, b = 8/3):
     """
     Generate the Lorenz data for toy example in:
     https://arxiv.org/pdf/1703.04691.pdf
     Generate t=1,1500 X, Y and Z as three time series.
+    Typical settings: dt = 0.01, initx = 0., inity = 1., initz = 1., s = 5, r = 20, b = 2
+    Or: dt = 0.01, initx = 0., inity = 1., initz = 1.05, s = 10, r = 28, b = 8/3
     """
     xs = np.zeros(stepCnt+1)
     ys = np.zeros(stepCnt+1)

@@ -89,7 +89,3 @@ class ArgParser(object):
         self._arg_parser.add_argument('--l2_regularization', type=float, default=default_l2_regularization)
         self._arg_parser.add_argument('--batch_size', type=int, default=default_batch_size)
         self._arg_parser.add_argument('--epochs', type=int, default=default_epochs)
-
-
-
-
