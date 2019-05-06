@@ -89,7 +89,6 @@ class LorenzBuilder(object):
         """
         net = Lorenz(L=self._options.dilation_depth, in_channels=self._options.in_channels, k=2, M=1)
         if self.for_train:
-            mx.random.seed(self._options.seed, ctx=self.ctx)
             net.collect_params().initialize(mx.init.Xavier(magnitude=2,
                                                            rnd_type='gaussian',
                                                            factor_type='in'),

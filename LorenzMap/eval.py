@@ -38,8 +38,8 @@ class Evaluate(object):
         if self._options.epochs > 1:
             loss_save = np.loadtxt(os.path.join(self._options.assets_dir, 'losses.txt'))
             plt = plot_losses(loss_save, 'train loss')
-            plt.show()
             plt.savefig(os.path.join(self._options.assets_dir, 'train_loss'))
+            plt.show()
             plt.close()
 
         # predictions

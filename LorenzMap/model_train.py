@@ -57,7 +57,6 @@ class Train(object):
         for epoch in trange(self._options.epochs):
             total_epoch_loss, nb = mx.nd.zeros(1, ctx), 0
             for x, y in train_iter:
-                nb += 1
                 # x shape: (batch_sizeXin_channelsXwidth)
                 x = x.reshape((self._options.batch_size,
                                self._options.in_channels, -1)).as_in_context(ctx)
@@ -68,6 +67,7 @@ class Train(object):
                 l.backward()
                 trainer.step(self._options.batch_size, ignore_stale_grad=True)
                 total_epoch_loss += l.sum()
+                nb += x.shape[0]
 
             current_loss = total_epoch_loss.asscalar() / nb
             loss_save.append(current_loss)
