@@ -22,7 +22,6 @@ End to end Lorenz Map data generation and uncoditional and conditional time seri
 model train, predict and evaluate on test using a CNN inspired from WaveNet architecture.
 """
 
-import mxnet as mx
 
 from model_train import Train
 from model_predict import Predict
@@ -30,8 +29,6 @@ from data_generation import LorenzMapData
 from data_iterator_builder import DIterators
 from arg_parser import ArgParser
 from eval import Evaluate
-
-# mx.random.seed(1234)
 
 def main():
     """
