@@ -94,7 +94,7 @@ class LorenzBuilder(object):
                                                            factor_type='in'),
                                                            ctx=self.ctx)
         else:
-            net.load_params(os.path.join(self._options.check_path, 'best_perf_model'), ctx=self.ctx)
+            net.load_parameters(os.path.join(self._options.check_path, 'best_perf_model'), ctx=self.ctx)
         return net
 
 

@@ -39,7 +39,7 @@ class Train(object):
         self._options = options
 
     def save_model(self, net):
-        net.save_params(os.path.join(self._options.check_path, 'best_perf_model'))
+        net.save_parameters(os.path.join(self._options.check_path, 'best_perf_model'))
 
     def train(self, train_iter):
         ctx = create_context(self._options.num_gpu)
