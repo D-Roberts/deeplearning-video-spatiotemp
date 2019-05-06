@@ -50,8 +50,8 @@ class ArgParser(object):
 
         Interface implementation arguments.
         """
-        self._arg_parser.add_argument('--trajectory', default=0)
-        self._arg_parser.add_argument('--model', default='w')
+        self._arg_parser.add_argument('--trajectory', type=int, default=0)
+        self._arg_parser.add_argument('--model', type=str, default='w')
         self._arg_parser.add_argument('--in_channels', type=int, default=1)
         self._arg_parser.add_argument('--lorenz_steps', type=int, default=1500)
         self._arg_parser.add_argument('--test_size', type=int, default=500)
