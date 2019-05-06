@@ -1,4 +1,4 @@
-### End to end time series prediction gluon code for the article:
+### End to end one step ahead time series prediction gluon code for the article:
 
 'Conditional Time Series Forecasting with Convolutional Neural Networks'
 
