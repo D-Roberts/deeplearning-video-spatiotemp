@@ -1,5 +1,7 @@
 ### End to end time series prediction gluon code for the article:
 
+'Conditional Time Series Forecasting with Convolutional Neural Networks'
+
 https://arxiv.org/abs/1703.04691
 
 and
@@ -13,14 +15,14 @@ Plotting two of the three trajectories (z vs x) gives rise to the Lorenz butterf
 
 ### Training and inference
 
-Conditional Wavenet architecture runs in 24 seconds end to end (CPU) and achieves on average the test RMSE reported in https://arxiv.org/abs/1703.04691): 
+Model achieves on average the test RMSE reported in https://arxiv.org/abs/1703.04691): 
 
 ###### default setting
 ```
 python main.py
 ``` 
 
-### Learning for Conditional Wavenet x series one step ahead prediction:
+### Learning for Conditional model for x series one step ahead prediction:
 
 ![losses_cw](assets/train_loss.png)
 
