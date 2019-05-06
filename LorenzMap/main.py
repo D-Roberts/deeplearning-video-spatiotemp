@@ -15,6 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
+
+"""
+
+End to end Lorenz Map data generation and uncoditional and conditional time series prediction
+model train, predict and evaluate on test using a CNN inspired from WaveNet architecture.
+"""
+
 import mxnet as mx
 
 from model_train import Train
