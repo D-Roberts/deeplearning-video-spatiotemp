@@ -83,14 +83,12 @@ class ArgParser(object):
         default_dilation_depth = 4
         default_learning_rate = 0.001
         default_l2_regularization = 0.001
-        default_seed = 1234
 
         self._arg_parser.add_argument('--dilation_depth', type=int, default=default_dilation_depth)
         self._arg_parser.add_argument('--learning_rate', type=float, default=default_learning_rate)
         self._arg_parser.add_argument('--l2_regularization', type=float, default=default_l2_regularization)
         self._arg_parser.add_argument('--batch_size', type=int, default=default_batch_size)
         self._arg_parser.add_argument('--epochs', type=int, default=default_epochs)
-        self._arg_parser.add_argument('--seed', type=int, default=default_seed)
 
 
 

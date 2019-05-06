@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import mxnet as mx
 
 from model_train import Train
 from model_predict import Predict
@@ -23,8 +24,7 @@ from data_iterator_builder import DIterators
 from arg_parser import ArgParser
 from eval import Evaluate
 
-
-
+mx.random.seed(1235)
 
 def main():
     """
