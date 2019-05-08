@@ -23,7 +23,7 @@ from mxnet import gluon
 
 
 class Lorenz(gluon.nn.Block):
-    def __init__(self, in_channels=1, L=4, k=2, M=1):
+    def __init__(self, in_channels, L, k, M):
         super(Lorenz, self).__init__()
         self.L = L
         self.dilations = [2 ** i for i in range(L)]

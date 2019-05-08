@@ -68,6 +68,7 @@ class Train(object):
                 trainer.step(self._options.batch_size, ignore_stale_grad=True)
                 total_epoch_loss += l.sum()
                 nb += x.shape[0]
+                # print('nb', nb)
 
             current_loss = total_epoch_loss.asscalar()/nb
             loss_save.append(current_loss)
