@@ -1,7 +1,7 @@
 # GluonTime
 The open source GluonTime repository contains the gluon-time project, an Apache MXNet Incubator and Gluon - based repository implementing architectures for time series prediction. 
 
-Models for time series with both time and frequency domain approaches are relevant.
+Models for time series in either time or frequency domain are relevant, as well as models with a spatial component. Applications related to sound, trajectories, video recognition, human activity recognition, asset returns, demand forecasting, and other time-varying signals are relevant.
 
 To get started, please see the quick_start and LorenzMap codes.
 

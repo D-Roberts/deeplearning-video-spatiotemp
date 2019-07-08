@@ -1,35 +1,34 @@
-### End to end time series prediction gluon code for the article:
+
+
+### End to end one step ahead time series prediction gluon code for the article:
+
+'Conditional Time Series Forecasting with Convolutional Neural Networks'
+
+https://arxiv.org/abs/1703.04691
+
+and
 
 'Lorenz Trajectories Prediction: Travel Through Time'.
 https://arxiv.org/abs/1903.07768
 
 Plotting two of the three trajectories (z vs x) gives rise to the Lorenz butterfly.
 
-![Lorenz_butterfly](assets/Lorenz_butterfly.png)
+![Lorenz_butterfly](assets/butterfly.png)
 
 ### Training and inference
 
-Conditional Wavenet architecture runs in 24 seconds end to end (CPU) and achieves on average the test RMSE reported in https://arxiv.org/abs/1703.04691): 
+Model achieves on average the test RMSE reported in https://arxiv.org/abs/1703.04691). For the unconditional prediction
+of the x trajectory, an average of 0.003 is achieved, with some variance.
 
 ###### default setting
 ```
 python main.py
 ``` 
-or
 
-###### Additional models:
+### Learning for Conditional model for x series one step ahead prediction:
 
-- unconditional WaveNet: 
-```
-python main.py --model='w'
-```
-
-Default parameters are described in the article and can be viewed in source code. 
-
-### Learning for Conditional Wavenet x series one step ahead prediction:
-
-![losses_cw](assets/losses_cw.png)
+![losses_cw](assets/train_loss.png)
 
 ### Predictions vs ground truth for x trajectory:
 
-![preds_cwn](assets/preds_cwn.png)
+![preds_cwn](assets/predsx_cw.png)

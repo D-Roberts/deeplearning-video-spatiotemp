@@ -15,16 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import numpy as np
+
+import os
+
 import mxnet as mx
 from mxnet import gluon
 
-np.random.seed(1234)
-ctx = mx.cpu()
-
 
 class Lorenz(gluon.nn.Block):
-    def __init__(self, r=16, in_channels=1, L=4, k=2, M=1):
+    def __init__(self, in_channels, L, k, M):
         super(Lorenz, self).__init__()
         self.L = L
         self.dilations = [2 ** i for i in range(L)]
@@ -76,3 +75,27 @@ class Lorenz(gluon.nn.Block):
         # add residual layer with matching shape
         output = output + x[:, :, -output.shape[2]:]
         return output, skips
+
+class LorenzBuilder(object):
+    def __init__(self, options, ctx, for_train):
+        self._options = options
+        self.for_train = for_train
+        self.ctx = ctx
+
+    def build(self):
+        """
+
+        :return: built net for training or prediction.
+        """
+        net = Lorenz(L=self._options.dilation_depth, in_channels=self._options.in_channels, k=2, M=1)
+        if self.for_train:
+            net.collect_params().initialize(mx.init.Xavier(magnitude=2,
+                                                           rnd_type='gaussian',
+                                                           factor_type='in'),
+                                                           ctx=self.ctx)
+        else:
+            net.load_parameters(os.path.join(self._options.check_path, 'best_perf_model'), ctx=self.ctx)
+        return net
+
+
+

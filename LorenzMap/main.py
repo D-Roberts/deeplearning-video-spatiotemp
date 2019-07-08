@@ -15,48 +15,53 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import argparse
-import time
-from train_predict import train_predict_cw, train_predict_w
 
+"""
+
+End to end Lorenz Map data generation and uncoditional and conditional time series prediction
+model train, predict and evaluate on test using a CNN inspired from WaveNet architecture.
+"""
+
+import mxnet as mx
+
+from model_train import Train
+from model_predict import Predict
+from data_generation import LorenzMapData
+from data_iterator_builder import DIterators
+from arg_parser import ArgParser
+from eval import Evaluate
+
+mx.random.seed(1235)
 
 def main():
-    """Run train and predict for the various Lorenz map prediction models with user
-    provided arguments. Assets are saved in the 'assets' folder in the project directory.
-    Assets saved are best model, losses plot and predictions vs ground truth plot.
-
-    model: can be Conditional Wavenet (cw), Unconditional Wavenet (w),
-    Conditional LSTM (clstm), Unconditional LSTM (lstm).
-
-    trajectory: to predict x (ts=0), y(ts=1), or z(ts=2) Lorenz trajectories.
-
-    epochs: default for wavenet =100, default for lstm =30.
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='cw')
-    parser.add_argument('--trajectory', type=int, default=0)
-    parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--epochs', type=int, default=100)
-    parser.add_argument('--Lorenzsteps', type=int, default=1500)
-    parser.add_argument('--test_size', type=int, default=500)
-    # TODO: add additional necessary args
 
+    Run train and predict for the various Lorenz map prediction models with user
+    provided arguments. Assets are saved in the 'assets' folder in the project directory.
 
-    config = vars(parser.parse_args())
+    Models can be Conditional Wavenet-inspired (cw), Unconditional Wavenet-inspired (w),
 
-    start = time.time()
+    Targets to predict are x (ts=0), y(ts=1), or z(ts=2) Lorenz trajectories.
+    """
 
-    if config['model'] == 'cw':
-        train_predict_cw(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
-                         batch_size=config['batch_size'], epochs=config['epochs'])
+    argparser = ArgParser()
+    options = argparser.parse_args()
+    data_generator = LorenzMapData(options)
+    train_data, test_data = data_generator.generate_train_test_sets()
 
-    elif config['model'] == 'w':
-        train_predict_w(ts=config['trajectory'], ntest=config['test_size'], Lorenznsteps=config['Lorenzsteps'],
-                         batch_size=config['batch_size'], epochs=config['epochs'])
+    # Train
+    trainer = Train(options)
+    train_iter = DIterators(options).build_iterator(train_data, for_train=True)
+    trainer.train(train_iter)
 
-    end = time.time()
+    # Predict on test set and evaluate
+    predictor = Predict(options)
+    predict_iter = DIterators(options).build_iterator(test_data, for_train=False)
+    predictor.predict(predict_iter)
 
-    print("Train and predict took ", end - start, " seconds.")
+    # Evaluate performance on test set
+    evaluator = Evaluate(options)
+    evaluator()
 
 if __name__ == '__main__':
     main()
