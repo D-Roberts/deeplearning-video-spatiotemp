@@ -23,7 +23,8 @@ def _test_model(net, ctx, x):
 
 def test():
     # 3 channels for rgb model
-    x = mx.random.uniform(shape=(_BATCH_SIZE, _SAMPLE_VIDEO_FRAMES, _IMAGE_SIZE, _IMAGE_SIZE, _NUM_CHANNELS), ctx=ctx)
+    # NCDHW layout in Gluon
+    x = mx.random.uniform(shape=(_BATCH_SIZE, _NUM_CHANNELS, _SAMPLE_VIDEO_FRAMES, _IMAGE_SIZE, _IMAGE_SIZE), ctx=ctx)
     net = i3d.i3d()
     _test_model(net, ctx, x)
 
