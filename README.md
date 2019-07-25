@@ -7,7 +7,7 @@ To get started, please see the quick_start and LorenzMap codes.
 
 Dependencies
 
-gluon-time requires:
+gluon-spaceTime requires:
 
 Python3
 
