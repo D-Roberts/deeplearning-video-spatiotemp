@@ -41,7 +41,7 @@ def main():
 
     # sample input
     x = mx.nd.array(np.load(_SAMPLE_PATHS['rgb']), ctx=ctx)
-    # (1, 79, 224, 224, 3)
+    x = x.reshape((_BATCH_SIZE, _NUM_CHANNELS, _SAMPLE_VIDEO_FRAMES, _IMAGE_SIZE, _IMAGE_SIZE))
 
     # build model
     net = i3d.i3d()
@@ -53,7 +53,6 @@ def main():
     # get predicted top 1 class by softmax probability
     output_softmax = nd.SoftmaxActivation(output).asnumpy()[0]
     sorted_indeces = np.argsort(output_softmax)[::-1][0]
-
     print(kinetics_classes[sorted_indeces])
 
 
