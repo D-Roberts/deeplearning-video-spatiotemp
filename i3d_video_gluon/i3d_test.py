@@ -3,7 +3,6 @@
 """
 
 import mxnet as mx
-import gluoncv as gcv
 
 import i3d
 
