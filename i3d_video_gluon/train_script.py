@@ -62,6 +62,9 @@ def main():
         X = mx.nd.array(np.load(_SAMPLE_PATHS['rgb']), ctx=ctx)
         # hard code the label as having first class correct
 
+        # reshape to work with gluon expectations
+        X = X.reshape((_BATCH_SIZE, _NUM_CHANNELS, _SAMPLE_VIDEO_FRAMES, _IMAGE_SIZE, _IMAGE_SIZE))
+
         y = mx.nd.array([1]).reshape((1,-1))
         dataset = gluon.data.ArrayDataset(X, y)
         data_loader = gluon.data.DataLoader(dataset, batch_size, last_batch='keep')
