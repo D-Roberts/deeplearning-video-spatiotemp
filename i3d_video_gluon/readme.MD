@@ -15,5 +15,5 @@ python train_script.py
 ```
 ### To evaluate on one sample:
 ```
-python evaluate_sample
+python evaluate_sample.py
 ```
