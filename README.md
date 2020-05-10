@@ -1,2 +1,2 @@
-## Deep learning models related to space and time.
+Deep learning models related to space and time.
 
