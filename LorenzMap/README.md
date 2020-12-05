@@ -3,7 +3,7 @@
 ### One step ahead time series prediction gluon code for the article:
 
 
-'Lorenz Trajectories Prediction: Travel Through Time'.
+'Neural Networks for Lorenz Map Prediction: A Trip Through Time'.
 https://arxiv.org/abs/1903.07768
 
 Plotting two of the three trajectories (z vs x) gives rise to the Lorenz butterfly.
