@@ -2,11 +2,6 @@
 
 ### One step ahead time series prediction gluon code for the article:
 
-'Conditional Time Series Forecasting with Convolutional Neural Networks'
-
-https://arxiv.org/abs/1703.04691
-
-and
 
 'Lorenz Trajectories Prediction: Travel Through Time'.
 https://arxiv.org/abs/1903.07768
