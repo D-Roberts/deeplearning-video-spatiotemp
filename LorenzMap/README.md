@@ -1,6 +1,6 @@
 
 
-### One step ahead time series prediction gluon code for the article:
+### Lorenz dynamical system trajectories prediction:
 
 
 'Neural Networks for Lorenz Map Prediction: A Trip Through Time'.
