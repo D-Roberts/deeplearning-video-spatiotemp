@@ -2,4 +2,4 @@
 
 Content:
 1. Gluon implementation of action in video recognition article "Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset" by Deepmind (translated from TensorFlow).
-2. Gluon implementation of trajectory prediction in "Lorenz Map Prediction: A Trip Through Time" (Chaos2021). (from scratch)
+2. Gluon implementation of trajectory prediction in "Lorenz Map Prediction: A Trip Through Time" . (from scratch)
